@@ -46,3 +46,14 @@ Không viết commit vô nghĩa (như: `fix`, `update`, `abc`). Hãy viết theo
 Trước khi đẩy code của mình lên GitHub, bắt buộc phải kéo code mới nhất của nhóm về máy để tránh đè câu lệnh hoặc gây lỗi xung đột (conflict):
 1. `git pull origin main` (Kéo code mới về và sửa lỗi xung đột nếu có)
 2. `git push origin [ten_nhanh_cua_ban]` (Đẩy code của mình lên)
+
+## ⚠️ Quy tắc 4: Ghi nhật ký tiến độ vào file `README.md`
+
+Ngay sau khi hoàn thành một tính năng (Feature) hoặc một yêu cầu được giao, thành viên thực hiện bắt buộc phải tuân thủ quy trình cập nhật tài liệu sau:
+
+* **Hành động:** Sử dụng AI để biên soạn và cập nhật thông tin công việc vào mục "Nhật ký tiến độ" trong file `README.md` tại thư mục tổng của dự án.
+* **Nội dung bắt buộc phải cung cấp cho AI bao gồm:**
+  1. **Công việc đã làm:** Tên tính năng/bản sửa lỗi và các module bị tác động (`Frontend`, `Backend` hoặc `AI`).
+  2. **Thời gian hoàn thành:** Ngày/tháng cụ thể.
+  3. **Người thực hiện:** Tên thành viên phụ trách.
+  4. **Hướng dẫn kiểm thử:** Các bước cụ thể (kèm lệnh chạy hoặc dữ liệu đầu vào mẫu) để các thành viên khác trong nhóm có thể test kiểm tra lại trên máy của họ.
