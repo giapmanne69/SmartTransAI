@@ -2,6 +2,11 @@
 
 Để đảm bảo cuốn Báo cáo Bài tập lớn cuối kỳ đạt kết quả thẩm định cao nhất từ Hội đồng chuyên môn, toàn bộ các thành viên trong nhóm có trách nhiệm tuyệt đối tuân thủ nghiêm ngặt **04 Quy tắc cốt lõi** dưới đây:
 
+## Phân role theo thành viên
+* Nguyễn Đình Dũng - B22DCCN131
+* Nguyễn Thế Giáp (Leader) - B22DCCN251
+* Phạm Minh Đức - B22DCCN239
+
 ---
 
 ## 🛑 Quy tắc 1: Nghiên cứu khung sườn chuẩn hóa
@@ -10,18 +15,18 @@
 
 ## 👥 Quy tắc 2: Phân rã nhiệm vụ đúng vai trò
 Nhóm phải thực hiện phân chia công việc minh bạch theo mô hình 3 nhân sự chính. Tuyệt đối không đùn đẩy trách nhiệm:
-* **Sinh viên A (Project Manager & Backend Lead):** Chịu trách nhiệm thiết kế hệ thống, viết API và hoàn thiện Chương 1 & Chương 2 (mục database, kiến trúc tổng thể).
-* **Sinh viên B (AI & Data Engineer):** Chịu trách nhiệm thiết kế luồng xử lý Agent, Prompt, kết nối RAG và hoàn thiện Chương 2 (mục LangGraph) & Chương 3 (mục thuật toán).
-* **Sinh viên C (Frontend Developer & QA):** Chịu trách nhiệm xây dựng giao diện UI/UX, tích hợp API, thực hiện Test Cases và hoàn thiện Chương 3 (mục tổng quan frontend) & Chương 4.
+* **Nguyễn Đình Dũng (Project Manager & Backend Lead):** Chịu trách nhiệm thiết kế hệ thống, viết API và hoàn thiện Chương 1 & Chương 2 (mục database, kiến trúc tổng thể).
+* **Nguyễn Thế Giáp(AI & Data Engineer):** Chịu trách nhiệm thiết kế luồng xử lý Agent, Prompt, kết nối RAG và hoàn thiện Chương 2 (mục LangGraph) & Chương 3 (mục thuật toán).
+* **Phạm Minh Đức(Frontend Developer & QA):** Chịu trách nhiệm xây dựng giao diện UI/UX, tích hợp API, thực hiện Test Cases và hoàn thiện Chương 3 (mục tổng quan frontend) & Chương 4.
 
 ## 📷 Quy tắc 3: Thu thập minh chứng trong quá trình phát triển (Chụp ảnh/Vẽ sơ đồ)
 Nghiêm cấm việc dùng ảnh mạng hoặc tạo dữ liệu giả lập không có trong mã nguồn. Mỗi thành viên có trách nhiệm bàn giao minh chứng số cho cuốn báo cáo theo phân viện:
 
 | Thành viên đảm nhiệm | Danh mục minh chứng bắt buộc phải bàn giao |
 | :--- | :--- |
-| **Sinh viên A** | <ul><li>Sơ đồ kiến trúc hệ thống tổng thể</li><li>Biểu đồ Use Case tổng quát</li><li>Sơ đồ quan hệ thực thể (ERD Diagram) từ Database thực tế</li></ul> |
-| **Sinh viên B** | <ul><li>Sơ đồ khối luồng chạy của LangGraph (State Machine)</li><li>Các đoạn cấu hình System Prompt mẫu</li><li>Bảng số liệu đối sánh kết quả dịch thuật ngữ</li></ul> |
-| **Sinh viên C** | <ul><li>Bảng kịch bản kiểm thử (Test Cases) có kết quả cụ thể</li><li>Ảnh chụp màn hình thực tế toàn bộ giao diện ứng dụng (Auth, Dashboard, Workspace, Glossary)</li></ul> |
+| **Nguyễn Đình Dũng** | <ul><li>Sơ đồ kiến trúc hệ thống tổng thể</li><li>Biểu đồ Use Case tổng quát</li><li>Sơ đồ quan hệ thực thể (ERD Diagram) từ Database thực tế</li></ul> |
+| **Nguyễn Thế Giáp** | <ul><li>Sơ đồ khối luồng chạy của LangGraph (State Machine)</li><li>Các đoạn cấu hình System Prompt mẫu</li><li>Bảng số liệu đối sánh kết quả dịch thuật ngữ</li></ul> |
+| **Phạm Minh Đức** | <ul><li>Bảng kịch bản kiểm thử (Test Cases) có kết quả cụ thể</li><li>Ảnh chụp màn hình thực tế toàn bộ giao diện ứng dụng (Auth, Dashboard, Workspace, Glossary)</li></ul> |
 
 ## 📅 Quy tắc 4: Tích hợp tiến độ song song (Continuous Documentation)
 * **Nguyên tắc cốt lõi:** Code đi đôi với Tài liệu. Nghiêm cấm hành vi dồn toàn bộ việc viết báo cáo vào tuần cuối cùng trước hạn nộp.

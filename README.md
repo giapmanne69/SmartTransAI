@@ -1,3 +1,8 @@
+## Thành viên nhóm
+1. Nguyễn Thế Giáp (Leader) - B22DCCN251
+2. Nguyễn Đình Dũng - B22DCCN131
+3. Phạm Minh Đức - B22DCCN239
+
 # Smart Trans AI - Hệ thống Dịch thuật Thông minh ứng dụng AI Agent
 
 ## 📌 Giới thiệu dự án
