@@ -44,6 +44,21 @@ Nghiên cứu này đóng góp một giải pháp toàn diện bao gồm:
 3.  Xây dựng hệ thống **Data Logging Pipeline** lưu vết chu trình phản hồi của con người, tạo tiền đề xây dựng bộ dữ liệu "vàng" (Gold Standard Dataset) cho việc tinh chỉnh (Fine-tuning) LLM độc lập bằng kỹ thuật QLoRA.
 
 ### 1.4. Bố cục của báo cáo khoa học
+Báo cáo khoa học được chuẩn hóa theo bố cục sau để đảm bảo đồng nhất giữa phần nội dung học thuật, phần minh chứng kỹ thuật và phần kiểm thử hệ thống:
+
+1.  **Tóm tắt (Abstract):** Nêu bối cảnh, bài toán, giải pháp, kết quả chính và từ khóa.
+2.  **Chương 1 - Mở đầu:** Trình bày lý do chọn đề tài, mục tiêu nghiên cứu, phạm vi, đối tượng nghiên cứu và đóng góp khoa học.
+3.  **Chương 2 - Tổng quan công nghệ liên quan:** Hệ thống hóa nền tảng lý thuyết gồm LLM, RAG, AI Agent, RBAC và các công trình liên quan.
+4.  **Chương 3 - Phương pháp nghiên cứu và thiết kế hệ thống:** Mô tả kiến trúc tổng thể, luồng xử lý tài liệu, thiết kế Censor AI Agent, dữ liệu và pipeline huấn luyện/tinh chỉnh.
+5.  **Chương 4 - Cài đặt, thực nghiệm và đánh giá:**
+    * 4.1. Kịch bản kiểm thử hệ thống (test cases, kết quả pass/fail, tiêu chí đánh giá).
+    * 4.2. Đánh giá chất lượng dịch (bảng đối sánh thuật ngữ, phân tích định tính/định lượng).
+    * 4.3. Minh chứng giao diện và quy trình vận hành thực tế (Auth, Dashboard, Workspace, Glossary).
+6.  **Kết luận và hướng phát triển:** Tổng kết kết quả đạt được, hạn chế và lộ trình mở rộng.
+7.  **Tài liệu tham khảo:** Trình bày theo một chuẩn thống nhất (khuyến nghị IEEE hoặc APA).
+8.  **Phụ lục:** Bao gồm hình ảnh minh chứng, sơ đồ kiến trúc, biểu đồ Use Case, ERD, cấu hình Prompt mẫu, truy vết kết quả kiểm thử.
+
+Lưu ý chuẩn hóa: Mọi hình ảnh, bảng số liệu và mô tả kỹ thuật phải được trích xuất từ sản phẩm thực tế của nhóm; không sử dụng dữ liệu giả lập không có trong mã nguồn.
 
 ---
 
@@ -103,6 +118,31 @@ $$\text{Similarity}(Q, V) = \frac{Q \cdot V}{\|Q\| \|V\|}$$
   "suggested_phrase": "Từ đề xuất chuẩn",
   "reason": "Lý do khoa học/ngữ cảnh chuyên ngành"
 }
+```
+
+---
+
+## CHƯƠNG 4: CÀI ĐẶT, THỰC NGHIỆM VÀ ĐÁNH GIÁ (IMPLEMENTATION & EVALUATION)
+
+### 4.1. Kịch bản kiểm thử hệ thống (System Test Scenarios)
+Xây dựng bộ test case cho các luồng chính: đăng nhập, upload tài liệu, khởi tạo job dịch, kiểm duyệt trong workspace, cập nhật glossary và xuất file. Mỗi test case cần có đầu vào, các bước thực hiện, kết quả kỳ vọng và kết quả thực tế.
+
+### 4.2. Đánh giá chất lượng dịch thuật và tính nhất quán thuật ngữ
+Thiết lập bảng đối sánh giữa bản dịch gốc (không có hỗ trợ Agent/RAG) và bản dịch của hệ thống Smart Trans AI theo các tiêu chí: độ đúng thuật ngữ, độ mạch lạc ngữ cảnh, tỷ lệ lỗi bị Censor phát hiện, thời gian hiệu chỉnh trung bình.
+
+### 4.3. Đánh giá giao diện và trải nghiệm vận hành
+Trình bày ảnh chụp màn hình thực tế cho các màn hình Auth, Dashboard, Workspace, Glossary; mô tả rõ vai trò của từng thành phần giao diện trong quy trình cộng tác User - AI Agent - Translation Censor.
+
+---
+
+## KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+Tổng kết các kết quả khoa học và kỹ thuật đã đạt được, các giới hạn hiện tại của hệ thống, và đề xuất hướng phát triển tiếp theo (tự động đánh giá chất lượng dịch, human feedback learning, tối ưu chi phí suy luận, đa ngôn ngữ).
+
+## TÀI LIỆU THAM KHẢO
+Liệt kê tài liệu theo một chuẩn trích dẫn thống nhất (IEEE/APA), bao gồm bài báo khoa học, tài liệu kỹ thuật LLM/RAG/LangGraph, tài liệu framework và công cụ đã sử dụng.
+
+## PHỤ LỤC
+Tổng hợp các minh chứng bổ sung: use case diagram, ERD, lưu đồ LangGraph state machine, prompt mẫu, bảng test case đầy đủ, và ảnh chụp hệ thống theo từng phiên bản demo.
 
 ## Phần 2: Hướng dẫn thực hiện và phân chia công việc (Nhóm 3 Sinh viên)
 
