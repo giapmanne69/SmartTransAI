@@ -1,197 +1,224 @@
-# HƯỚNG DẪN HOÀN THÀNH BÁO CÁO BÀI TẬP LỚN CUỐI KỲ
+# HUONG DAN HOAN THANH BAO CAO BAI TAP LON CUOI KY
 
-Tài liệu này cung cấp **Cấu trúc chi tiết của cuốn báo cáo** và **Kế hoạch phối hợp thực hiện dành cho nhóm 3 sinh viên** nhằm tối ưu hóa năng suất và đảm bảo tính đồng bộ của dự án Smart Trans AI.
+Tai lieu nay cung cap:
+- Cau truc chi tiet cho bao cao de tai Smart Trans AI.
+- Ke hoach phoi hop cho nhom 3 sinh vien trong 4-6 tuan.
+- Phan cong ro rang giua cong viec ky thuat va viet bao cao.
 
-## Phân role theo thành viên
-* Nguyễn Đình Dũng - B22DCCN131
-* Nguyễn Thế Giáp (Leader) - B22DCCN251
-* Phạm Minh Đức - B22DCCN239
+## 1. Thong tin nhom va de tai
 
-# Hệ thống Cộng tác Người – Máy trong Dịch thuật Học thuật Anh – Việt Sử dụng Kiến trúc Multi-Tool AI Agent và Tinh chỉnh Mô hình theo Ngữ cảnh
+### 1.1. Thanh vien
+- Nguyen Dinh Dung - B22DCCN131
+- Nguyen The Giap (Leader) - B22DCCN251
+- Pham Minh Duc - B22DCCN239
 
-**Sinh viên thực hiện:** [Tên của bạn]  
-**Mã số sinh viên:** [MSSV của bạn]  
-**Giảng viên hướng dẫn:** [Tên giảng viên]  
-**Đơn vị:** [Tên Trường/Viện]  
-*Hà Nội, Tháng 06 Năm 2026*
+### 1.2. Ten de tai
+He thong Cong tac Nguoi - May trong Dich thuat Hoc thuat Anh - Viet Su dung Kien truc Multi-Tool AI Agent va Tinh chinh Mo hinh theo Ngu canh
 
----
-
-## TÓM TẮT (ABSTRACT)
-
-*   **Bối cảnh:** Sự gia tăng mạnh mẽ của tài liệu khoa học quốc tế đòi hỏi các hệ thống dịch thuật phải đạt độ chính xác cao về mặt thuật ngữ và ngữ cảnh. Tuy nhiên, các công cụ dịch tự động dựa trên kiến trúc Neural Machine Translation (NMT) truyền thống hiện nay thường thất bại trong việc xử lý ngữ cảnh học thuật sâu sắc và làm mất định dạng cấu trúc nguyên bản của file đầu vào.
-*   **Bài toán nghiên cứu:** Giải quyết tình trạng quá tải cho người kiểm duyệt dịch thuật (Translation Censor), đảm bảo tính nhất quán thuật ngữ xuyên suốt các tài liệu dài, và bảo toàn toàn vẹn định dạng cấu trúc DOM/XML của các tệp tin.
-*   **Giải pháp đề xuất:** Nghiên cứu và xây dựng một hệ thống dịch thuật phân quyền dựa trên kiến trúc Multi-Tool AI Agent. Agent được trang bị bộ nhớ ngắn hạn (Short-term Memory), công cụ truy vấn thực thể động trên cơ sở dữ liệu Vector (VectorDB RAG), và bộ phát hiện lỗi ngữ nghĩa chuyên ngành. Hệ thống hoạt động theo cơ chế cộng tác song hành với con người (Human-in-the-loop), đồng thời lưu vết dữ liệu hiệu chỉnh làm tài nguyên phục vụ tinh chỉnh (Fine-tuning) mô hình LLM cốt lõi dài hạn.
-*   **Kết quả:** Hệ thống giúp tối ưu hóa thời gian hiệu chỉnh của chuyên gia dịch thuật, nâng cao tính nhất quán của thuật ngữ chuyên ngành chuyên sâu, và xuất bản tài liệu đầu ra trùng khớp định dạng gốc của tệp tin đầu vào.
+### 1.3. Thong tin bieu mau trang bia
+**Sinh vien thuc hien:** [Dien ten nhom/ten sinh vien]  
+**Ma so sinh vien:** [Dien MSSV]  
+**Giang vien huong dan:** [Dien ten giang vien]  
+**Don vi:** [Dien ten Truong/Vien]  
+*Ha Noi, Thang 06 Nam 2026*
 
 ---
 
-## CHƯƠNG 1: MỞ ĐẦU (INTRODUCTION)
+## 2. Khung noi dung bao cao
 
-### 1.1. Đặt vấn đề và Động lực nghiên cứu
-Trong kỷ nguyên bùng nổ thông tin và hội nhập toàn cầu, nhu cầu tiếp cận và chuyển ngữ các tài liệu học thuật chuyên ngành (Công nghệ thông tin, Y sinh, Kinh tế - Tài chính) từ tiếng Anh sang tiếng Việt và ngược lại là cực kỳ cấp thiết. Dịch thuật học thuật không chỉ dừng lại ở việc chuyển đổi ngôn từ mà đòi hỏi khắt khe về độ chuẩn xác ngữ cảnh, tính nhất quán mang tính hệ thống của các thuật ngữ chuyên sâu, và khả năng bảo toàn cấu trúc văn bản phức tạp (bảng biểu, sơ đồ, liên kết XML/DOM) của các định dạng tệp phổ biến như PDF, Word, HTML.
+## TOM TAT (ABSTRACT)
 
-### 1.2. Hạn chế của các nghiên cứu và công cụ hiện tại
-Các công cụ dịch thuật phổ biến (Google Translate, Microsoft Translator) hoặc việc gọi trực tiếp các mô hình ngôn ngữ lớn (LLM) theo cơ chế Zero-shot thường bộc lộ những hạn chế lớn sau:
-*   **Hiện tượng ảo tưởng thuật ngữ (Hallucination):** Dịch thuật từ-đối-từ làm mất đi ý nghĩa khoa học của cụm từ chuyên ngành.
-*   **Thiếu tính nhất quán:** Cùng một thuật ngữ chuyên môn ở chương trước có thể bị dịch thành một từ hoàn toàn khác ở chương sau trong một tài liệu dài.
-*   **Mất cấu trúc tệp:** Việc trích xuất text thô (raw text) để dịch làm phá vỡ hoàn toàn định dạng hiển thị, gây tốn kém thời gian định dạng lại thủ công.
-
-### 1.3. Đóng góp khoa học của đề tài
-Nghiên cứu này đóng góp một giải pháp toàn diện bao gồm:
-1.  Đề xuất mô hình phân quyền cộng tác ba thành phần dựa trên vai trò (Role-based Access Control - RBAC) tối ưu hóa luồng công việc giữa **User** (Người cần dịch) $\rightarrow$ **AI Agent** (Trợ lý ảo duyệt tự động) $\rightarrow$ **Translation Censor** (Chuyên gia duyệt tối hậu).
-2.  Thiết kế kiến trúc **Censor AI Agent** tích hợp bộ nhớ ngắn hạn (Short-term Memory) quản lý trạng thái hội thoại và cơ chế gọi công cụ (Tool Calling) để tự động hóa việc phát hiện lỗi dịch thuật thuật ngữ.
-3.  Xây dựng hệ thống **Data Logging Pipeline** lưu vết chu trình phản hồi của con người, tạo tiền đề xây dựng bộ dữ liệu "vàng" (Gold Standard Dataset) cho việc tinh chỉnh (Fine-tuning) LLM độc lập bằng kỹ thuật QLoRA.
-
-### 1.4. Bố cục của báo cáo khoa học
-Báo cáo khoa học được chuẩn hóa theo bố cục sau để đảm bảo đồng nhất giữa phần nội dung học thuật, phần minh chứng kỹ thuật và phần kiểm thử hệ thống:
-
-1.  **Tóm tắt (Abstract):** Nêu bối cảnh, bài toán, giải pháp, kết quả chính và từ khóa.
-2.  **Chương 1 - Mở đầu:** Trình bày lý do chọn đề tài, mục tiêu nghiên cứu, phạm vi, đối tượng nghiên cứu và đóng góp khoa học.
-3.  **Chương 2 - Tổng quan công nghệ liên quan:** Hệ thống hóa nền tảng lý thuyết gồm LLM, RAG, AI Agent, RBAC và các công trình liên quan.
-4.  **Chương 3 - Phương pháp nghiên cứu và thiết kế hệ thống:** Mô tả kiến trúc tổng thể, luồng xử lý tài liệu, thiết kế Censor AI Agent, dữ liệu và pipeline huấn luyện/tinh chỉnh.
-5.  **Chương 4 - Cài đặt, thực nghiệm và đánh giá:**
-    * 4.1. Kịch bản kiểm thử hệ thống (test cases, kết quả pass/fail, tiêu chí đánh giá).
-    * 4.2. Đánh giá chất lượng dịch (bảng đối sánh thuật ngữ, phân tích định tính/định lượng).
-    * 4.3. Minh chứng giao diện và quy trình vận hành thực tế (Auth, Dashboard, Workspace, Glossary).
-6.  **Kết luận và hướng phát triển:** Tổng kết kết quả đạt được, hạn chế và lộ trình mở rộng.
-7.  **Tài liệu tham khảo:** Trình bày theo một chuẩn thống nhất (khuyến nghị IEEE hoặc APA).
-8.  **Phụ lục:** Bao gồm hình ảnh minh chứng, sơ đồ kiến trúc, biểu đồ Use Case, ERD, cấu hình Prompt mẫu, truy vết kết quả kiểm thử.
-
-Lưu ý chuẩn hóa: Mọi hình ảnh, bảng số liệu và mô tả kỹ thuật phải được trích xuất từ sản phẩm thực tế của nhóm; không sử dụng dữ liệu giả lập không có trong mã nguồn.
+- **Boi canh:** Su gia tang manh me cua tai lieu khoa hoc quoc te doi hoi he thong dich thuat dat do chinh xac cao ve thuat ngu va ngu canh. Cac cong cu NMT truyen thong van gap han che khi xu ly ngu canh hoc thuat sau va thuong lam mat dinh dang tep dau vao.
+- **Bai toan nghien cuu:** Giai quyet qua tai cho nguoi kiem duyet dich thuat (Translation Censor), dam bao tinh nhat quan thuat ngu xuyen suot tai lieu dai, va bao toan cau truc DOM/XML cua tep.
+- **Giai phap de xuat:** Xay dung he thong dich thuat phan quyen dua tren kien truc Multi-Tool AI Agent, tich hop bo nho ngan han, truy van thuat ngu dong qua VectorDB RAG, va bo phat hien loi ngu nghia chuyen nganh. He thong van hanh theo co che human-in-the-loop va luu vet du lieu hieu chinh de phuc vu fine-tuning LLM dai han.
+- **Ket qua ky vong:** Toi uu thoi gian hieu chinh cua chuyen gia, tang tinh nhat quan thuat ngu, va xuat ban tai lieu dau ra giu nguyen dinh dang goc.
 
 ---
 
-## CHƯƠNG 2: TỔNG QUAN CÁC CÔNG NGHỆ LIÊN QUAN (RELATED WORK)
+## CHUONG 1: MO DAU (INTRODUCTION)
 
-### 2.1. Mô hình ngôn ngữ lớn (LLM) và Dịch thuật ngữ cảnh (Context-aware Translation)
-Tổng quan về sự dịch chuyển từ kiến trúc RNN/LSTM sang kiến trúc Transformer. Phân tích cách các mô hình LLM hiện đại xử lý cửa sổ ngữ cảnh (Context Window) để thực hiện biên dịch dựa trên mạch văn thay vì dịch từng câu cô lập.
+### 1.1. Dat van de va dong luc nghien cuu
+Trong boi canh hoi nhap va bung no thong tin, nhu cau chuyen ngu tai lieu hoc thuat chuyen nganh (CNTT, Y sinh, Kinh te - Tai chinh) giua tieng Anh va tieng Viet ngay cang cap thiet. Dich thuat hoc thuat doi hoi do chuan xac ngu canh cao, tinh nhat quan thuat ngu mang tinh he thong, va kha nang bao toan cau truc van ban phuc tap (bang bieu, so do, lien ket XML/DOM) cua cac dinh dang PDF, Word, HTML.
 
-### 2.2. Kiến trúc RAG (Retrieval-Augmented Generation) và Cơ sở dữ liệu Vector
-Nghiên cứu cơ chế nhúng văn bản (Text Embeddings) để biến các cặp thuật ngữ học thuật thành các vector đa chiều. Phân tích nguyên lý hoạt động của các hệ quản trị cơ sở dữ liệu vector (ChromaDB, Milvus) trong việc tra cứu độ tương đồng ngữ nghĩa phục vụ việc cung cấp từ điển động (Dynamic Glossary) cho mô hình sinh chữ.
+### 1.2. Han che cua cac nghien cuu va cong cu hien tai
+Cong cu dich pho bien hoac cach goi LLM theo co che zero-shot thuong boc lo:
+- **Ao tuong thuat ngu (Hallucination):** Dich tu-doi-tu lam sai nghia khoa hoc.
+- **Thieu tinh nhat quan:** Cung mot thuat ngu co the bi dich khac nhau o cac phan khac nhau cua tai lieu dai.
+- **Mat cau truc tep:** Trich xuat raw text de dich de pha vo dinh dang hien thi, ton nhieu cong sua thu cong.
 
-### 2.3. Kiến trúc AI Agent và Cơ chế gọi công cụ (Tool Calling)
-Phân tích mô hình suy nghĩ của Agent dựa trên các framework như ReAct (Reasoning and Acting). Khảo sát cách thức LLM sinh ra các chuỗi lệnh cấu trúc (Function Calling) để kích hoạt các đoạn mã ngoại vi nhằm kiểm chứng thông tin trước khi ra quyết định.
+### 1.3. Dong gop khoa hoc cua de tai
+De tai huong toi 3 dong gop chinh:
+1. De xuat mo hinh cong tac 3 thanh phan theo RBAC: **User** $\rightarrow$ **AI Agent** $\rightarrow$ **Translation Censor**.
+2. Thiet ke **Censor AI Agent** tich hop short-term memory va tool calling de ho tro phat hien loi thuat ngu.
+3. Xay dung **Data Logging Pipeline** luu vet phan hoi con nguoi, tao nen tang du lieu vang cho fine-tuning LLM bang QLoRA.
 
-### 2.4. Quản lý truy cập dựa trên vai trò (RBAC) và Bảo mật dữ liệu
-Tổng quan về kiến trúc phân quyền hệ thống dựa trên token JWT (JSON Web Token), đảm bảo tính cô lập dữ liệu và toàn vẹn tài nguyên giữa các nhóm người dùng trong hệ thống cộng tác.
+### 1.4. Bo cuc bao cao
+1. **Tom tat (Abstract):** Boi canh, bai toan, giai phap, ket qua, tu khoa.
+2. **Chuong 1 - Mo dau:** Ly do chon de tai, muc tieu, pham vi, dong gop.
+3. **Chuong 2 - Tong quan cong nghe lien quan:** LLM, RAG, AI Agent, RBAC, related work.
+4. **Chuong 3 - Phuong phap nghien cuu va thiet ke he thong:** Kien truc, luong xu ly, thiet ke Agent, du lieu, pipeline huan luyen/tinh chinh.
+5. **Chuong 4 - Cai dat, thuc nghiem va danh gia:**
+     - 4.1. Kich ban kiem thu he thong (test cases, ket qua pass/fail, tieu chi).
+     - 4.2. Danh gia chat luong dich (doi sanh thuat ngu, dinh tinh/dinh luong).
+     - 4.3. Minh chung giao dien va quy trinh van hanh (Auth, Dashboard, Workspace, Glossary).
+6. **Ket luan va huong phat trien:** Tong ket ket qua, han che, lo trinh mo rong.
+7. **Tai lieu tham khao:** Trinh bay theo IEEE hoac APA.
+8. **Phu luc:** Hinh minh chung, so do kien truc, Use Case, ERD, prompt mau, bang test case day du.
+
+Luu y chuan hoa: Moi hinh anh, bang so lieu va mo ta ky thuat phai trich xuat tu san pham thuc te cua nhom; khong su dung du lieu gia lap khong co trong ma nguon.
 
 ---
 
-## CHƯƠNG 3: PHƯƠNG PHÁP NGHIÊN CỨU & THIẾT KẾ HỆ THỐNG (METHODOLOGY)
+## CHUONG 2: TONG QUAN CAC CONG NGHE LIEN QUAN (RELATED WORK)
 
-### 3.1. Kiến trúc tổng thể hệ thống (System Architecture)
-Hệ thống được thiết kế theo mô hình kiến trúc hướng dịch vụ, chia tách rõ ràng giữa tầng giao diện phân quyền và tầng nghiệp vụ AI core. Luồng kiểm soát truy cập dựa trên vai trò (RBAC) được siết chặt qua các Middleware để điều phối tài nguyên:
-*   **User:** Chỉ có quyền truy cập các endpoint upload, theo dõi tiến độ và download tệp tin.
-*   **Translation Censor:** Có quyền truy cập không gian làm việc chung (Censor Workspace), tương tác với AI Agent, chỉnh sửa bản dịch thô và phê duyệt chunk văn bản.
-*   **Admin:** Toàn quyền quản trị tài khoản, kiểm soát tài nguyên hệ thống và quản lý cơ sở dữ liệu từ điển gốc.
+### 2.1. Mo hinh ngon ngu lon (LLM) va dich thuat ngu canh (Context-aware Translation)
+Trinh bay su dich chuyen tu RNN/LSTM sang Transformer. Phan tich cach LLM xu ly context window de dich theo mach van ban thay vi tung cau co lap.
 
-### 3.2. Mô hình phân tách văn bản bảo toàn cấu trúc (Structure-preserving Document Parser)
-Để giải quyết bài toán mất định dạng file, hệ thống cài đặt module `parser_service.py`. Module này thực hiện phân tách tệp (PDF, Word, HTML) thành dạng cây phân cấp (DOM Tree hoặc cấu trúc XML). Quá trình phân tách trích xuất văn bản thô đồng thời đính kèm một ánh xạ siêu dữ liệu (Metadata Mapping Key):
+### 2.2. Kien truc RAG (Retrieval-Augmented Generation) va co so du lieu Vector
+Mo ta co che text embeddings, nguyen ly truy van do tuong dong ngu nghia tren ChromaDB/Milvus, va vai tro cua dynamic glossary trong chat luong dau ra.
+
+### 2.3. Kien truc AI Agent va co che tool calling
+Phan tich tu duy Agent theo ReAct (Reasoning and Acting), co che function calling va vai tro cua cong cu ngoai vi trong xac thuc thong tin truoc khi ra quyet dinh.
+
+### 2.4. Quan ly truy cap theo vai tro (RBAC) va bao mat du lieu
+Tong quan co che JWT, middleware phan quyen, va dam bao tinh co lap du lieu giua cac nhom nguoi dung.
+
+---
+
+## CHUONG 3: PHUONG PHAP NGHIEN CUU VA THIET KE HE THONG (METHODOLOGY)
+
+### 3.1. Kien truc tong the he thong (System Architecture)
+He thong theo huong dich vu, tach ro tang giao dien phan quyen va tang nghiep vu AI core. Luong RBAC qua middleware:
+- **User:** Upload, theo doi tien do, download tep.
+- **Translation Censor:** Lam viec tai Censor Workspace, tuong tac AI Agent, sua ban dich tho, phe duyet chunk.
+- **Admin:** Quan tri tai khoan, tai nguyen he thong, va co so du lieu tu dien goc.
+
+### 3.2. Mo hinh phan tach van ban bao toan cau truc (Structure-preserving Document Parser)
+Module `parser_service.py` phan tich PDF/Word/HTML thanh cau truc DOM/XML, trich xuat text kem metadata:
 
 $$\text{Chunk}_i = \{ \text{TextContent}, \text{StyleMetadata}, \text{PositionIndex} \}$$
 
-Sau khi văn bản thô đi qua luồng dịch thuật và kiểm duyệt, hệ thống gọi `exporter_service.py` để map ngược lại `TextContent` mới vào đúng `StyleMetadata` và `PositionIndex` ban đầu, đảm bảo tệp đầu ra trùng khớp định dạng gốc.
+Sau khi dich va kiem duyet, module `exporter_service.py` map nguoc noi dung moi vao dung metadata va vi tri ban dau de bao toan dinh dang tep.
 
-### 3.3. Kiến trúc Chi tiết Censor AI Agent
-Trọng tâm khoa học của hệ thống nằm ở module `agent_core.py`, xây dựng một thực thể AI Agent kiểm duyệt hoạt động song hành cùng Censor người.
+### 3.3. Kien truc chi tiet Censor AI Agent
+Trong tam cua he thong nam o `agent_core.py`, noi Agent van hanh song hanh voi Censor nguoi.
 
-#### A. Cơ chế Bộ nhớ ngắn hạn (Short-term Memory)
-Agent duy trì một bộ đệm trạng thái liên tục (State Buffer) xuyên suốt một phiên làm việc (Session) đối với một tài liệu cụ thể. Khi Censor người thực hiện chỉnh sửa hoặc phê duyệt một thuật ngữ ở đoạn văn bản trước, thay đổi này sẽ ngay lập tức được ghi vào bộ nhớ ngắn hạn của Agent. Ở các đoạn văn bản tiếp theo, Agent dựa vào trạng thái bộ nhớ này để đưa ra các góp ý mang tính nhất quán cao, giảm thiểu việc lặp lại các lỗi sai tương tự.
+#### 3.3.1. Co che bo nho ngan han (Short-term Memory)
+Agent duy tri state buffer theo tung session tai lieu. Moi chinh sua/phe duyet cua Censor duoc ghi vao bo nho nay de dung lai cho cac chunk tiep theo, qua do tang tinh nhat quan va giam lap loi.
 
-#### B. Thiết kế và vận hành các Công cụ chuyên biệt (Agent Tools)
-Agent được cấp quyền kích hoạt 2 công cụ cốt lõi thông qua cơ chế Function Calling:
+#### 3.3.2. Thiet ke va van hanh cac cong cu (Agent Tools)
+Agent kich hoat 2 cong cu cot loi qua function calling:
 
-*   **Tool 1: Glossary Retrieval Tool (Công cụ truy vấn thuật ngữ):** Khi nhận được một phân đoạn văn bản thô cần dịch hoặc cần duyệt, Tool 1 tự động trích xuất các thực thể danh từ (Named Entities) và thực hiện tìm kiếm tương đồng Cosine (Cosine Similarity) trên VectorDB:
+- **Tool 1 - Glossary Retrieval Tool:** Trich xuat named entities, truy van tuong dong cosine tren VectorDB:
 
 $$\text{Similarity}(Q, V) = \frac{Q \cdot V}{\|Q\| \|V\|}$$
 
-> *Trong đó $Q$ là vector nhúng của đoạn văn bản hiện tại, và $V$ là vector nhúng của tập thuật ngữ có trong cơ sở dữ liệu từ điển.* Đầu ra của Tool 1 là danh sách các thuật ngữ bắt buộc phải tuân theo trong phân đoạn đó.
+Trong do $Q$ la vector nhung cua doan hien tai, $V$ la vector nhung cua tap thuat ngu trong tu dien. Dau ra la danh sach thuat ngu bat buoc.
 
-*   **Tool 2: Academic Error Detection Tool (Công cụ phát hiện lỗi học thuật):** Nhận đầu vào là [Bản dịch thô ban đầu] kết hợp với [Danh sách thuật ngữ chuẩn từ Tool 1]. Tool 2 thực hiện phân tích cú pháp, đối chiếu chéo để phát hiện các lỗi sai về ngữ nghĩa, thuật ngữ chuyên ngành hoặc văn phong phi học thuật. Đầu ra của công cụ này được cấu trúc hóa nghiêm ngặt dưới dạng JSON để phục vụ việc hiển thị ở giao diện:
+- **Tool 2 - Academic Error Detection Tool:** Doi chieu ban dich tho voi glossary chuan de phat hien loi ngu nghia, sai thuat ngu, hoac van phong phi hoc thuat. Dau ra JSON de hien thi tren giao dien:
 
 ```json
 {
-  "has_error": true,
-  "error_type": "Terminology Mismatch",
-  "wrong_phrase": "Từ dịch sai",
-  "suggested_phrase": "Từ đề xuất chuẩn",
-  "reason": "Lý do khoa học/ngữ cảnh chuyên ngành"
+    "has_error": true,
+    "error_type": "Terminology Mismatch",
+    "wrong_phrase": "Tu dich sai",
+    "suggested_phrase": "Tu de xuat chuan",
+    "reason": "Ly do khoa hoc/ngu canh chuyen nganh"
 }
 ```
 
 ---
 
-## CHƯƠNG 4: CÀI ĐẶT, THỰC NGHIỆM VÀ ĐÁNH GIÁ (IMPLEMENTATION & EVALUATION)
+## CHUONG 4: CAI DAT, THUC NGHIEM VA DANH GIA (IMPLEMENTATION AND EVALUATION)
 
-### 4.1. Kịch bản kiểm thử hệ thống (System Test Scenarios)
-Xây dựng bộ test case cho các luồng chính: đăng nhập, upload tài liệu, khởi tạo job dịch, kiểm duyệt trong workspace, cập nhật glossary và xuất file. Mỗi test case cần có đầu vào, các bước thực hiện, kết quả kỳ vọng và kết quả thực tế.
+### 4.1. Kich ban kiem thu he thong (System Test Scenarios)
+Xay dung bo test case cho cac luong: dang nhap, upload tai lieu, khoi tao job dich, kiem duyet trong workspace, cap nhat glossary, xuat file. Moi test case can co:
+- Dau vao.
+- Cac buoc thuc hien.
+- Ket qua ky vong.
+- Ket qua thuc te.
 
-### 4.2. Đánh giá chất lượng dịch thuật và tính nhất quán thuật ngữ
-Thiết lập bảng đối sánh giữa bản dịch gốc (không có hỗ trợ Agent/RAG) và bản dịch của hệ thống Smart Trans AI theo các tiêu chí: độ đúng thuật ngữ, độ mạch lạc ngữ cảnh, tỷ lệ lỗi bị Censor phát hiện, thời gian hiệu chỉnh trung bình.
+### 4.2. Danh gia chat luong dich va tinh nhat quan thuat ngu
+Thiet lap bang doi sanh giua:
+- Ban dich goc (khong ho tro Agent/RAG).
+- Ban dich cua he thong Smart Trans AI.
 
-### 4.3. Đánh giá giao diện và trải nghiệm vận hành
-Trình bày ảnh chụp màn hình thực tế cho các màn hình Auth, Dashboard, Workspace, Glossary; mô tả rõ vai trò của từng thành phần giao diện trong quy trình cộng tác User - AI Agent - Translation Censor.
+Tieu chi danh gia:
+- Do dung thuat ngu.
+- Do mach lac ngu canh.
+- Ty le loi duoc Censor phat hien.
+- Thoi gian hieu chinh trung binh.
 
----
-
-## KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
-Tổng kết các kết quả khoa học và kỹ thuật đã đạt được, các giới hạn hiện tại của hệ thống, và đề xuất hướng phát triển tiếp theo (tự động đánh giá chất lượng dịch, human feedback learning, tối ưu chi phí suy luận, đa ngôn ngữ).
-
-## TÀI LIỆU THAM KHẢO
-Liệt kê tài liệu theo một chuẩn trích dẫn thống nhất (IEEE/APA), bao gồm bài báo khoa học, tài liệu kỹ thuật LLM/RAG/LangGraph, tài liệu framework và công cụ đã sử dụng.
-
-## PHỤ LỤC
-Tổng hợp các minh chứng bổ sung: use case diagram, ERD, lưu đồ LangGraph state machine, prompt mẫu, bảng test case đầy đủ, và ảnh chụp hệ thống theo từng phiên bản demo.
-
-## Phần 2: Hướng dẫn thực hiện và phân chia công việc (Nhóm 3 Sinh viên)
-
-Để hoàn thành khối lượng công việc trên trong vòng 4-6 tuần, nhóm cần phân rã nhiệm vụ chi tiết theo đúng chuyên môn như sau:
-
-### 👤 Nguyễn Đình Dũng: Project Manager & Backend Lead
-* **Vai trò chính:** Thiết kế kiến trúc hệ thống, xây dựng Core Backend, quản lý Database và API endpoints.
-* **Nhiệm vụ trong Code:**
-    * Khởi tạo cấu trúc dự án backend, cấu hình cấu trúc cấu trúc file (`core/config.py`, `database.py`).
-    * Thiết kế hệ thống DB Models (`models.py`) và thực hiện migration.
-    * Viết các API endpoints phục vụ cho Auth, Document, và Glossary.
-* **Nhiệm vụ viết Báo cáo:**
-    * Viết **Lời mở đầu** và **Chương 1** (Khảo sát bài toán, Đặc tả yêu cầu chức năng, Vẽ biểu đồ Use Case).
-    * Viết **Chương 2 - Mục 2.1 & 2.2** (Vẽ sơ đồ kiến trúc hệ thống tổng thể, vẽ sơ đồ ERD và đặc tả chi tiết các bảng dữ liệu).
-    * Chịu trách nhiệm tổng hợp, căn chỉnh format toàn bộ cuốn báo cáo (Font, Word template, Mục lục).
-
-### 👤 Nguyễn Thế Giáp: AI Agent & Data Engineer
-* **Vai trò chính:** Hiện thực hóa luồng xử lý AI, cấu hình LangGraph, tích hợp RAG và tối ưu hóa hệ thống Prompt.
-* **Nhiệm vụ trong Code:**
-    * Viết module xử lý văn bản `services/doc_processor.py` (Parser PDF/Word, Sentence Splitter).
-    * Xây dựng cấu trúc LangGraph trong `agent/graph.py`, viết logic cho các Agent Nodes và cấu hình `agent/tools.py`.
-    * Kết nối Vector Database thông qua `services/vector_service.py` để làm RAG cho Glossary/TM.
-* **Nhiệm vụ viết Báo cáo:**
-    * Viết **Chương 2 - Mục 2.3** (Vẽ sơ đồ khối kiến trúc LangGraph, giải thích cơ chế State Machine và tự sửa lỗi của Agent).
-    * Viết **Chương 3 - Mục 3.3** (Giải thích các đoạn code cốt lõi về xử lý file, cấu hình Graph và truy vấn Vector DB).
-    * Viết **Chương 4 - Mục 4.2** (Thu thập dữ liệu dịch, lập bảng so sánh kết quả dịch và đánh giá định tính chất lượng đầu ra của AI).
-
-### 👤 Phạm Minh Đức: Frontend Developer & QA (Quality Assurance)
-* **Vai trò chính:** Xây dựng giao diện người dùng (UI/UX), kết nối API từ Backend và thực hiện kiểm thử hệ thống.
-* **Nhiệm vụ trong Code:**
-    * Khởi tạo cấu trúc mã nguồn Frontend, cấu hình Router, Context, Axios Client.
-    * Hiện thực hóa giao diện các cụm tính năng trong `features/`: Auth, Dashboard, Glossary.
-    * Tập trung xây dựng giao diện màn hình `features/workspace/` (giao diện song ngữ chia theo hàng, có cột hiển thị gợi ý từ AI và Glossary động bên cạnh).
-* **Nhiệm vụ viết Báo cáo:**
-    * Viết **Chương 3 - Mục 3.1 & 3.2** (Tổng hợp công nghệ sử dụng, giải thích sơ đồ cây cấu trúc mã nguồn của cả Backend và Frontend).
-    * Viết **Chương 4 - Mục 4.1 & 4.3** (Lập bảng Kịch bản kiểm thử hệ thống; Chụp ảnh toàn bộ giao diện demo thực tế của sản phẩm, viết mô tả chi tiết cho từng màn hình).
-    * Viết phần **Kết luận và Hướng phát triển** của đề tài.
+### 4.3. Danh gia giao dien va trai nghiem van hanh
+Trinh bay anh chup thuc te cho cac man hinh Auth, Dashboard, Workspace, Glossary va mo ta vai tro tung thanh phan trong quy trinh cong tac User - AI Agent - Translation Censor.
 
 ---
 
-## 📈 Quy trình phối hợp làm việc nhóm (Workflow)
+## KET LUAN VA HUONG PHAT TRIEN
+Tong ket ket qua khoa hoc - ky thuat da dat duoc, cac gioi han hien tai, va de xuat huong phat trien tiep theo: tu dong danh gia chat luong dich, human feedback learning, toi uu chi phi suy luan, da ngon ngu.
+
+## TAI LIEU THAM KHAO
+Liet ke theo mot chuan trich dan thong nhat (khuyen nghi IEEE/APA), bao gom bai bao khoa hoc, tai lieu LLM/RAG/LangGraph, framework va cong cu da su dung.
+
+## PHU LUC
+Tong hop cac minh chung bo sung: Use Case Diagram, ERD, luu do state machine, prompt mau, bang test case day du, va anh chup he thong theo tung phien ban demo.
+
+---
+
+## 3. Phan cong cong viec theo thanh vien
+
+De hoan thanh khoi luong cong viec trong 4-6 tuan, nhom phan ra nhu sau:
+
+### 3.1. Nguyen Dinh Dung - Project Manager va Backend Lead
+- **Vai tro chinh:** Thiet ke kien truc he thong, xay dung backend core, quan ly database va API endpoints.
+- **Nhiem vu code:**
+    - Khoi tao cau truc du an backend, cau hinh file he thong (`core/config.py`, `database.py`).
+    - Thiet ke DB models (`models.py`) va migration.
+    - Xay dung API cho Auth, Document, Glossary.
+- **Nhiem vu bao cao:**
+    - Viet Loi mo dau va Chuong 1 (khao sat bai toan, dac ta yeu cau, Use Case).
+    - Viet Chuong 2, muc 2.1 va 2.2 (kien truc tong the, ERD, dac ta bang du lieu).
+    - Tong hop va can chinh dinh dang toan bo bao cao.
+
+### 3.2. Nguyen The Giap - AI Agent va Data Engineer
+- **Vai tro chinh:** Hien thuc luong AI, cau hinh LangGraph, tich hop RAG, toi uu prompt.
+- **Nhiem vu code:**
+    - Phat trien `services/doc_processor.py` (parser PDF/Word, sentence splitter).
+    - Xay dung graph trong `agent/graph.py`, logic node, va `agent/tools.py`.
+    - Ket noi VectorDB trong `services/vector_service.py` cho Glossary/TM.
+- **Nhiem vu bao cao:**
+    - Viet Chuong 2, muc 2.3 (so do khoi LangGraph, co che state machine, tu sua loi).
+    - Viet Chuong 3, muc 3.3 (code cot loi xu ly file, graph, truy van vector).
+    - Viet Chuong 4, muc 4.2 (thu thap du lieu, doi sanh ket qua dich, danh gia chat luong AI).
+
+### 3.3. Pham Minh Duc - Frontend Developer va QA
+- **Vai tro chinh:** Xay dung UI/UX, ket noi API, va kiem thu he thong.
+- **Nhiem vu code:**
+    - Khoi tao frontend, cau hinh router, context, axios client.
+    - Hien thuc UI cho Auth, Dashboard, Glossary trong `features/`.
+    - Tap trung man hinh `features/workspace/` (song ngu theo hang, cot goi y AI, glossary dong).
+- **Nhiem vu bao cao:**
+    - Viet Chuong 3, muc 3.1 va 3.2 (cong nghe su dung, cay cau truc ma nguon backend/frontend).
+    - Viet Chuong 4, muc 4.1 va 4.3 (bang test scenario, anh demo, mo ta tung man hinh).
+    - Viet phan Ket luan va Huong phat trien.
+
+---
+
+## 4. Quy trinh phoi hop lam viec nhom (Workflow)
 
 ```text
-1: Thống nhất yêu cầu ──> Thiết kế DB & Sơ đồ Agent (Sinh viên A + B)
-                                      │
-2-3: Code Core API (SV A) <──────┼──────> Code LangGraph & RAG (SV B)
-                                      │
-3-4: Code UI & Kết nối API (SV C) <┘
-                                      │
-5: Viết báo cáo theo cấu phần phân chia ──> Ghép phôi & Chuẩn hóa tài liệu
-
+Tuan 1: Thong nhat yeu cau -> Thiet ke DB va so do Agent (SV A + B)
+Tuan 2-3: Code Core API (SV A) song song voi code LangGraph + RAG (SV B)
+Tuan 3-4: Code UI va ket noi API (SV C)
+Tuan 5: Viet bao cao theo cau phan da phan cong
+Tuan 6: Ghep phoi, chuan hoa tai lieu, tong duyet demo
 ```
+
+## 5. Checklist truoc khi nop
+
+- Noi dung bao cao day du theo chuong, khong thieu muc.
+- Tat ca hinh anh/bang bieu la minh chung that tu he thong.
+- Tai lieu tham khao dung mot chuan trich dan thong nhat.
+- Thuat ngu su dung nhat quan giua code, giao dien, va bao cao.
+- Da soat loi chinh ta, dinh dang, muc luc, danh muc hinh/bang.
+- Da tong duyet demo va doi chieu voi cac test case trong Chuong 4.
