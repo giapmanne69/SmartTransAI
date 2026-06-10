@@ -1,306 +1,136 @@
-# HƯỚNG DẪN HOÀN THÀNH BÁO CÁO BÀI TẬP LỚN CUỐI KỲ
+# BỘ QUY TẮC VÀ HƯỚNG DẪN HOÀN THÀNH BÁO CÁO KHOA HỌC CUỐI KỲ
 
 Tài liệu này cung cấp:
+* Khung sườn cấu trúc Bài báo khoa học / Báo cáo nghiên cứu chuẩn hóa (Thay thế hoàn toàn mô hình báo cáo ứng dụng phần mềm).
+* Quy trình thiết lập thực nghiệm, thu thập số liệu định lượng ($BLEU$, tỷ lệ lỗi) và phân tích định tính.
+* Kế hoạch phân rã nhiệm vụ cho nhóm 3 sinh viên dựa trên việc phát triển mã nguồn Core Engine (chạy trên Script/Notebook).
 
-* Cấu trúc chi tiết cho báo cáo đề tài Smart Trans AI.
-* Kế hoạch phối hợp cho nhóm 3 sinh viên trong 4–6 tuần.
-* Phân công rõ ràng giữa công việc kỹ thuật và viết báo cáo.
+---
 
-## 1. Thông tin nhóm và đề tài
+## 1. Thông tin nhóm và đề tài nghiên cứu
 
-### 1.1. Thành viên
+### 1.1. Thành viên nhóm thực hiện
+* **Nguyễn Thế Giáp (Leader)** - MSSV: B22DCCN251 *(Phụ trách AI Kernel & Thực nghiệm)*
+* **Nguyễn Đình Dũng** - MSSV: B22DCCN131 *(Phụ trách Thiết kế thực nghiệm & Cơ sở khoa học)*
+* **Phạm Minh Đức** - MSSV: B22DCCN239 *(Phụ trách Đánh giá số liệu & Kết quả toán học)*
 
-* Nguyễn Đình Dũng - B22DCCN131
-* Nguyễn Thế Giáp (Leader) - B22DCCN251
-* Phạm Minh Đức - B22DCCN239
-
-### 1.2. Tên đề tài
-
+### 1.2. Tên đề tài khoa học
 **Hệ thống Cộng tác Người - Máy trong Dịch thuật Học thuật Anh - Việt sử dụng Kiến trúc Multi-Tool AI Agent và Tinh chỉnh Mô hình theo Ngữ cảnh**
 
-### 1.3. Thông tin biểu mẫu trang bìa
-
-**Sinh viên thực hiện:** [Điền tên nhóm/tên sinh viên]
-**Mã số sinh viên:** [Điền MSSV]
-**Giảng viên hướng dẫn:** [Điền tên giảng viên]
-**Đơn vị:** [Điền tên Trường/Viện]
-*Hà Nội, tháng 06 năm 2026*
+### 1.3. Chuẩn hóa thông tin biểu mẫu trang bìa
+* **Sinh viên thực hiện:** Nguyễn Thế Giáp, Nguyễn Đình Dũng, Phạm Minh Đức
+* **Giảng viên hướng dẫn:** [Điền tên Giảng viên]
+* **Đơn vị:** Khoa Công nghệ Thông tin - Học viện Công nghệ Bưu chính Viễn thông
+* *Hà Nội, tháng 06 năm 2026*
 
 ---
 
-# 2. Khung nội dung báo cáo
+## 2. Khung nội dung Bài báo khoa học (Research Paper Structure)
 
-# TÓM TẮT (ABSTRACT)
-
-* **Bối cảnh:** Sự gia tăng mạnh mẽ của tài liệu khoa học quốc tế đòi hỏi hệ thống dịch thuật đạt độ chính xác cao về thuật ngữ và ngữ cảnh. Các công cụ NMT truyền thống vẫn gặp hạn chế khi xử lý ngữ cảnh học thuật sâu và thường làm mất định dạng tệp đầu vào.
-* **Bài toán nghiên cứu:** Giải quyết quá tải cho người kiểm duyệt dịch thuật (Translation Censor), đảm bảo tính nhất quán thuật ngữ xuyên suốt tài liệu dài, và bảo toàn cấu trúc DOM/XML của tệp.
-* **Giải pháp đề xuất:** Xây dựng hệ thống dịch thuật phân quyền dựa trên kiến trúc Multi-Tool AI Agent, tích hợp bộ nhớ ngắn hạn, truy vấn thuật ngữ động qua VectorDB RAG và bộ phát hiện lỗi ngữ nghĩa chuyên ngành. Hệ thống vận hành theo cơ chế Human-in-the-Loop và lưu vết dữ liệu hiệu chỉnh để phục vụ Fine-tuning LLM dài hạn.
-* **Kết quả kỳ vọng:** Tối ưu thời gian hiệu chỉnh của chuyên gia, tăng tính nhất quán thuật ngữ và xuất bản tài liệu đầu ra giữ nguyên định dạng gốc.
-
----
-
-# CHƯƠNG 1: MỞ ĐẦU (INTRODUCTION)
-
-## 1.1. Đặt vấn đề và động lực nghiên cứu
-
-Trong bối cảnh hội nhập và bùng nổ thông tin, nhu cầu chuyển ngữ tài liệu học thuật chuyên ngành (CNTT, Y sinh, Kinh tế - Tài chính) giữa tiếng Anh và tiếng Việt ngày càng cấp thiết. Dịch thuật học thuật đòi hỏi độ chuẩn xác ngữ cảnh cao, tính nhất quán thuật ngữ mang tính hệ thống và khả năng bảo toàn cấu trúc văn bản phức tạp (bảng biểu, sơ đồ, liên kết XML/DOM) của các định dạng PDF, Word, HTML.
-
-## 1.2. Hạn chế của các nghiên cứu và công cụ hiện tại
-
-Các công cụ dịch phổ biến hoặc cách gọi LLM theo cơ chế Zero-shot thường bộc lộ:
-
-* **Ảo tưởng thuật ngữ (Hallucination):** Dịch từ-đối-từ làm sai nghĩa khoa học.
-* **Thiếu tính nhất quán:** Cùng một thuật ngữ có thể bị dịch khác nhau ở các phần khác nhau của tài liệu dài.
-* **Mất cấu trúc tệp:** Trích xuất văn bản thô để dịch dễ phá vỡ định dạng hiển thị, tốn nhiều công sửa thủ công.
-
-## 1.3. Đóng góp khoa học của đề tài
-
-Đề tài hướng tới 3 đóng góp chính:
-
-1. Đề xuất mô hình cộng tác 3 thành phần theo RBAC: **User → AI Agent → Translation Censor**.
-2. Thiết kế **Censor AI Agent** tích hợp Short-term Memory và Tool Calling để hỗ trợ phát hiện lỗi thuật ngữ.
-3. Xây dựng **Data Logging Pipeline** lưu vết phản hồi con người, tạo nền tảng dữ liệu vàng cho Fine-tuning LLM bằng QLoRA.
-
-## 1.4. Bố cục báo cáo
-
-1. **Tóm tắt (Abstract):** Bối cảnh, bài toán, giải pháp, kết quả, từ khóa.
-2. **Chương 1 - Mở đầu:** Lý do chọn đề tài, mục tiêu, phạm vi, đóng góp.
-3. **Chương 2 - Tổng quan công nghệ liên quan:** LLM, RAG, AI Agent, RBAC, Related Work.
-4. **Chương 3 - Phương pháp nghiên cứu và thiết kế hệ thống:** Kiến trúc, luồng xử lý, thiết kế Agent, dữ liệu, pipeline huấn luyện/tinh chỉnh.
-5. **Chương 4 - Cài đặt, thực nghiệm và đánh giá:**
-
-   * 4.1. Kịch bản kiểm thử hệ thống (Test Cases, kết quả Pass/Fail, tiêu chí).
-   * 4.2. Đánh giá chất lượng dịch (đối sánh thuật ngữ, định tính/định lượng).
-   * 4.3. Minh chứng giao diện và quy trình vận hành (Auth, Dashboard, Workspace, Glossary).
-6. **Kết luận và hướng phát triển:** Tổng kết kết quả, hạn chế, lộ trình mở rộng.
-7. **Tài liệu tham khảo:** Trình bày theo IEEE hoặc APA.
-8. **Phụ lục:** Hình minh chứng, sơ đồ kiến trúc, Use Case, ERD, Prompt mẫu, bảng Test Case đầy đủ.
-
-**Lưu ý chuẩn hóa:** Mọi hình ảnh, bảng số liệu và mô tả kỹ thuật phải trích xuất từ sản phẩm thực tế của nhóm; không sử dụng dữ liệu giả lập không có trong mã nguồn.
+### TÓM TẮT (ABSTRACT)
+* **Bối cảnh:** Sự gia tăng mạnh mẽ của tài liệu khoa học quốc tế đòi hỏi hệ thống dịch đạt độ chính xác cao về thuật ngữ. Các công cụ NMT truyền thống và việc gọi LLM theo dạng Zero-shot vẫn gặp hạn chế nghiêm trọng về tính nhất quán ngữ cảnh và bảo toàn cấu trúc dữ liệu tệp (XML/DOM).
+* **Bài toán nghiên cứu:** Giảm tải cho người kiểm duyệt dịch thuật (Translation Censor) thông qua việc tự động hóa phát hiện lỗi ngữ nghĩa, tối ưu hóa bộ nhớ dịch thuật (TM) và áp dụng từ điển thuật ngữ chuyên ngành (Glossary) tự động.
+* **Giải pháp đề xuất:** Xây dựng Core Engine dịch thuật dựa trên kiến trúc Multi-Tool AI Agent (vận hành bằng LangGraph). Hệ thống tích hợp bộ nhớ trạng thái ngắn hạn (Short-term State Memory), cơ chế RAG dựa trên khoảng cách Cosine trên VectorDB để truy vấn thuật ngữ động, và một bộ kiểm tra lỗi logic học thuật (Error Detection Tool).
+* **Kết quả đạt được:** Hệ thống cải thiện rõ rệt chỉ số định lượng ($BLEU$ score), nâng cao tỷ lệ tuân thủ thuật ngữ chuyên ngành và giảm thiểu thời gian hiệu chỉnh của con người (Human-in-the-loop).
 
 ---
 
-# CHƯƠNG 2: TỔNG QUAN CÁC CÔNG NGHỆ LIÊN QUAN (RELATED WORK)
-
-## 2.1. Mô hình ngôn ngữ lớn (LLM) và dịch thuật ngữ cảnh (Context-aware Translation)
-
-Trình bày sự dịch chuyển từ RNN/LSTM sang Transformer. Phân tích cách LLM xử lý Context Window để dịch theo mạch văn bản thay vì từng câu cô lập.
-
-## 2.2. Kiến trúc RAG (Retrieval-Augmented Generation) và cơ sở dữ liệu Vector
-
-Mô tả cơ chế Text Embeddings, nguyên lý truy vấn độ tương đồng ngữ nghĩa trên ChromaDB/Milvus và vai trò của Dynamic Glossary trong chất lượng đầu ra.
-
-## 2.3. Kiến trúc AI Agent và cơ chế Tool Calling
-
-Phân tích tư duy Agent theo ReAct (Reasoning and Acting), cơ chế Function Calling và vai trò của công cụ ngoại vi trong xác thực thông tin trước khi ra quyết định.
-
-## 2.4. Quản lý truy cập theo vai trò (RBAC) và bảo mật dữ liệu
-
-Tổng quan cơ chế JWT, Middleware phân quyền và đảm bảo tính cô lập dữ liệu giữa các nhóm người dùng.
+### CHƯƠNG 1: MỞ ĐẦU (INTRODUCTION)
+* **1.1. Đặt vấn đề và động lực nghiên cứu:** Sự cần thiết của việc dịch thuật chính xác tài liệu học thuật (CNTT, Y sinh, Khoa học dữ liệu). Thách thức về tính hệ thống của thuật ngữ trong văn bản dài.
+* **1.2. Hạn chế của các nghiên cứu và công cụ hiện tại:** Phân tích hiện tượng ảo tưởng (Hallucination) của LLM; vấn đề trôi ngữ cảnh khi tài liệu bị băm nhỏ cô lập; sự phá vỡ cấu trúc định dạng file khi dịch thô.
+* **1.3. Đóng góp khoa học của đề tài:**
+    1. Đề xuất quy trình xử lý văn bản song ngữ bảo toàn cấu trúc phân đoạn (`doc_processor`).
+    2. Thiết kế và cài đặt kiến trúc Multi-Agent điều khiển bằng đồ thị trạng thái (State Graph).
+    3. Tích hợp cơ chế RAG thời gian thực tối ưu hóa độ chính xác của từ điển chuyên ngành.
+* **1.4. Bố cục của bài báo khoa học.**
 
 ---
 
-# CHƯƠNG 3: PHƯƠNG PHÁP NGHIÊN CỨU VÀ THIẾT KẾ HỆ THỐNG (METHODOLOGY)
-
-## 3.1. Kiến trúc tổng thể hệ thống (System Architecture)
-
-Hệ thống theo hướng dịch vụ, tách rõ tầng giao diện phân quyền và tầng nghiệp vụ AI Core. Luồng RBAC qua Middleware:
-
-* **User:** Upload, theo dõi tiến độ, tải xuống tệp.
-* **Translation Censor:** Làm việc tại Censor Workspace, tương tác AI Agent, sửa bản dịch thô, phê duyệt từng Chunk.
-* **Admin:** Quản trị tài khoản, tài nguyên hệ thống và cơ sở dữ liệu từ điển gốc.
-
-## 3.2. Mô hình phân tách văn bản bảo toàn cấu trúc (Structure-preserving Document Parser)
-
-Module `parser_service.py` phân tích PDF/Word/HTML thành cấu trúc DOM/XML, trích xuất văn bản kèm Metadata:
-
-[
-Chunk_i = {TextContent,\ StyleMetadata,\ PositionIndex}
-]
-
-Sau khi dịch và kiểm duyệt, module `exporter_service.py` ánh xạ ngược nội dung mới vào đúng Metadata và vị trí ban đầu để bảo toàn định dạng tệp.
-
-## 3.3. Kiến trúc chi tiết Censor AI Agent
-
-Trọng tâm của hệ thống nằm ở `agent_core.py`, nơi Agent vận hành song hành với Censor.
-
-### 3.3.1. Cơ chế bộ nhớ ngắn hạn (Short-term Memory)
-
-Agent duy trì State Buffer theo từng phiên tài liệu. Mỗi chỉnh sửa/phê duyệt của Censor được ghi vào bộ nhớ này để dùng lại cho các Chunk tiếp theo, qua đó tăng tính nhất quán và giảm lặp lỗi.
-
-### 3.3.2. Thiết kế và vận hành các công cụ (Agent Tools)
-
-Agent kích hoạt 2 công cụ cốt lõi qua Function Calling:
-
-#### Tool 1 - Glossary Retrieval Tool
-
-Trích xuất Named Entities, truy vấn tương đồng Cosine trên VectorDB:
-
-[
-Similarity(Q,V)=\frac{Q \cdot V}{|Q| |V|}
-]
-
-Trong đó:
-
-* (Q): Vector nhúng của đoạn hiện tại.
-* (V): Vector nhúng của tập thuật ngữ trong từ điển.
-
-Đầu ra là danh sách thuật ngữ bắt buộc.
-
-#### Tool 2 - Academic Error Detection Tool
-
-Đối chiếu bản dịch thô với Glossary chuẩn để phát hiện lỗi ngữ nghĩa, sai thuật ngữ hoặc văn phong phi học thuật.
-
-Ví dụ đầu ra JSON:
-
-```json
-{
-  "has_error": true,
-  "error_type": "Terminology Mismatch",
-  "wrong_phrase": "Từ dịch sai",
-  "suggested_phrase": "Từ đề xuất chuẩn",
-  "reason": "Lý do khoa học/ngữ cảnh chuyên ngành"
-}
-```
+### CHƯƠNG 2: TỔNG QUAN CÁC CÔNG NGHỆ LIÊN QUAN (RELATED WORK)
+* **2.1. Mô hình ngôn ngữ lớn và Context-aware Translation:** Nguyên lý cửa sổ ngữ cảnh (Context Window) của kiến trúc Transformer giúp xử lý mạch văn dịch thuật.
+* **2.2. Kiến trúc RAG (Retrieval-Augmented Generation) và Cơ sở dữ liệu Vector:** Cơ chế Embeddings dữ liệu, nguyên lý toán học của việc tìm kiếm láng giềng gần nhất trên không gian đa chiều (ChromaDB/Qdrant).
+* **2.3. Kiến trúc AI Agent và cơ chế Tool Calling:** Phân tích quy trình suy luận ReAct (Reasoning and Acting), cách Agent tương tác với các hàm ngoại vi để kiểm chứng thông tin trước khi xuất bản bản dịch.
 
 ---
 
-# CHƯƠNG 4: CÀI ĐẶT, THỰC NGHIỆM VÀ ĐÁNH GIÁ (IMPLEMENTATION AND EVALUATION)
-
-## 4.1. Kịch bản kiểm thử hệ thống (System Test Scenarios)
-
-Xây dựng bộ Test Case cho các luồng:
-
-* Đăng nhập.
-* Upload tài liệu.
-* Khởi tạo Job dịch.
-* Kiểm duyệt trong Workspace.
-* Cập nhật Glossary.
-* Xuất tệp.
-
-Mỗi Test Case cần có:
-
-* Đầu vào.
-* Các bước thực hiện.
-* Kết quả kỳ vọng.
-* Kết quả thực tế.
-
-## 4.2. Đánh giá chất lượng dịch và tính nhất quán thuật ngữ
-
-Thiết lập bảng đối sánh giữa:
-
-* Bản dịch gốc (không hỗ trợ Agent/RAG).
-* Bản dịch của hệ thống Smart Trans AI.
-
-Tiêu chí đánh giá:
-
-* Độ đúng thuật ngữ.
-* Độ mạch lạc ngữ cảnh.
-* Tỷ lệ lỗi được Censor phát hiện.
-* Thời gian hiệu chỉnh trung bình.
-
-## 4.3. Đánh giá giao diện và trải nghiệm vận hành
-
-Trình bày ảnh chụp thực tế cho các màn hình Auth, Dashboard, Workspace, Glossary và mô tả vai trò từng thành phần trong quy trình cộng tác User - AI Agent - Translation Censor.
+### CHƯƠNG 3: PHƯƠNG PHÁP NGHIÊN CỨU VÀ THIẾT KẾ CORE ENGINE (METHODOLOGY)
+* **3.1. Kiến trúc luồng xử lý AI tập trung (Agentic Workflow Architecture):** Vẽ và mô tả sơ đồ luồng dữ liệu chạy ngầm từ văn bản gốc $\rightarrow$ Trích xuất câu $\rightarrow$ Nhúng Vector $\rightarrow$ Vòng lặp Agent $\rightarrow$ Xuất dữ liệu đối sánh.
+* **3.2. Mô hình phân tách văn bản bảo toàn cấu trúc:** Thuật toán phân tích cấu trúc tệp đầu vào, đóng gói văn bản dưới dạng cấu trúc dữ liệu JSON để phục vụ ánh xạ ngược (Reverse Mapping) sau khi dịch:
+  $$\text{Chunk}_i = \{\text{TextContent}, \text{ContextWindow}, \text{PositionIndex}\}$$
+* **3.3. Thiết kế chi tiết Hệ thống Multi-Agent và Agent Tools:**
+    * **Cơ chế quản lý trạng thái Graph:** Định nghĩa bộ nhớ ngắn hạn (Short-term State Memory) để truyền ngữ cảnh dịch từ phân đoạn trước sang phân đoạn sau.
+    * **Glossary Retrieval Tool:** Công thức tính toán độ tương đồng Cosine để tự động bốc tách thuật ngữ chuyên ngành từ VectorDB:
+      $$\text{Similarity}(Q, V) = \frac{Q \cdot V}{\|Q\| \|V\|}$$
+    * **Academic Error Detection Tool:** Thiết kế cấu trúc đầu ra nghiêm ngặt (Structured Output) bằng Pydantic để Agent tự đánh giá và sửa lỗi ngữ nghĩa, lỗi sai thuật ngữ trước khi kết thúc luồng.
 
 ---
 
-# KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+### CHƯƠNG 4: THIẾT LẬP THỰC NGHIỆM VÀ ĐÁNH GIÁ ĐỊNH LƯỢNG (EXPERIMENTS AND EVALUATION)
+*(Chương trọng tâm thay thế cho phần Demo ứng dụng và Test Case phần mềm)*
 
-Tổng kết kết quả khoa học - kỹ thuật đã đạt được, các giới hạn hiện tại và đề xuất hướng phát triển tiếp theo: tự động đánh giá chất lượng dịch, Human Feedback Learning, tối ưu chi phí suy luận và hỗ trợ đa ngôn ngữ.
-
-# TÀI LIỆU THAM KHẢO
-
-Liệt kê theo một chuẩn trích dẫn thống nhất (khuyến nghị IEEE hoặc APA), bao gồm bài báo khoa học, tài liệu LLM/RAG/LangGraph, framework và công cụ đã sử dụng.
-
-# PHỤ LỤC
-
-Tổng hợp các minh chứng bổ sung:
-
-* Use Case Diagram.
-* ERD.
-* Lưu đồ State Machine.
-* Prompt mẫu.
-* Bảng Test Case đầy đủ.
-* Ảnh chụp hệ thống theo từng phiên bản Demo.
+* **4.1. Thiết lập môi trường thực nghiệm (Experimental Setup):**
+    * **Tập dữ liệu thử nghiệm (Dataset):** Mô tả tập mẫu tài liệu học thuật (Anh - Việt) được sử dụng để chạy thử nghiệm, bao gồm số lượng từ, số phân đoạn, và bản dịch đối chứng chuẩn của con người (Ground Truth).
+    * **Mô hình nền (Baseline Models):** Cấu hình các tham số môi trường chạy trên Google Colab / Jupyter Notebook (Sử dụng API của GPT-4o, Gemini 1.5 Pro).
+* **4.2. Tiêu chí đánh giá khoa học (Evaluation Metrics):** Định nghĩa công thức toán học và cách thức tính toán các chỉ số:
+    * Điểm **BLEU** và chỉ số **TER** đánh giá độ tương đồng văn bản.
+    * Chỉ số **Glossary Compliance Rate (GCR)** tính toán tỷ lệ phần trăm thuật ngữ chuyên ngành được dịch chính xác theo yêu cầu.
+* **4.3. Phân tích kết quả thực nghiệm và Case Study:**
+    * **Bảng số liệu đối sánh thực nghiệm:** Trình bày bảng so sánh định lượng kết quả đầu ra giữa dịch thô Zero-shot và hệ thống Multi-Agent Multi-Tool của nhóm.
+    * **Phân tích sai sót mẫu (Error Analysis):** Trích dẫn cụ thể một số câu dịch tiêu biểu để chứng minh luồng tự sửa lỗi (Self-Correction) của Agent đã hoạt động hiệu quả như thế nào khi phát hiện ra lỗi thuật ngữ.
 
 ---
 
-# 3. Phân công công việc theo thành viên
-
-Để hoàn thành khối lượng công việc trong 4–6 tuần, nhóm phân công như sau:
-
-## 3.1. Nguyễn Đình Dũng - Project Manager và Backend Lead
-
-### Vai trò chính
-
-Thiết kế kiến trúc hệ thống, xây dựng Backend Core, quản lý Database và API Endpoints.
-
-### Nhiệm vụ Code
-
-* Khởi tạo cấu trúc dự án Backend, cấu hình hệ thống (`core/config.py`, `database.py`).
-* Thiết kế DB Models (`models.py`) và Migration.
-* Xây dựng API cho Auth, Document, Glossary.
-
-### Nhiệm vụ Báo cáo
-
-* Viết Lời mở đầu và Chương 1 (khảo sát bài toán, đặc tả yêu cầu, Use Case).
-* Viết Chương 2, mục 2.1 và 2.2 (kiến trúc tổng thể, ERD, đặc tả bảng dữ liệu).
-* Tổng hợp và căn chỉnh định dạng toàn bộ báo cáo.
-
-## 3.2. Nguyễn Thế Giáp - AI Agent và Data Engineer
-
-### Vai trò chính
-
-Hiện thực luồng AI, cấu hình LangGraph, tích hợp RAG và tối ưu Prompt.
-
-### Nhiệm vụ Code
-
-* Phát triển `services/doc_processor.py` (Parser PDF/Word, Sentence Splitter).
-* Xây dựng Graph trong `agent/graph.py`, Logic Node và `agent/tools.py`.
-* Kết nối VectorDB trong `services/vector_service.py` cho Glossary/Translation Memory.
-
-### Nhiệm vụ Báo cáo
-
-* Viết Chương 2, mục 2.3 (sơ đồ khối LangGraph, cơ chế State Machine, tự sửa lỗi).
-* Viết Chương 3, mục 3.3 (xử lý file, Graph, truy vấn Vector).
-* Viết Chương 4, mục 4.2 (thu thập dữ liệu, đối sánh kết quả dịch, đánh giá chất lượng AI).
-
-## 3.3. Phạm Minh Đức - Frontend Developer và QA
-
-### Vai trò chính
-
-Xây dựng UI/UX, kết nối API và kiểm thử hệ thống.
-
-### Nhiệm vụ Code
-
-* Khởi tạo Frontend, cấu hình Router, Context, Axios Client.
-* Hiện thực giao diện cho Auth, Dashboard, Glossary trong `features/`.
-* Tập trung màn hình `features/workspace/` (song ngữ theo hàng, cột gợi ý AI, Glossary động).
-
-### Nhiệm vụ Báo cáo
-
-* Viết Chương 3, mục 3.1 và 3.2 (công nghệ sử dụng, cây cấu trúc mã nguồn Backend/Frontend).
-* Viết Chương 4, mục 4.1 và 4.3 (bảng Test Scenario, ảnh Demo, mô tả màn hình).
-* Viết phần Kết luận và Hướng phát triển.
+### KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+### TÀI LIỆU THAM KHẢO (Theo chuẩn IEEE)
+### PHỤ LỤC (Chứa mã nguồn Core chính, Đồ thị cấu trúc LangGraph và các System Prompt thô)
 
 ---
 
-# 4. Quy trình phối hợp làm việc nhóm (Workflow)
+## 3. Phân công công việc tối ưu cho nhóm 3 sinh viên
 
-```text
-Tuần 1: Thống nhất yêu cầu → Thiết kế DB và sơ đồ Agent (SV A + B)
-Tuần 2-3: Code Core API (SV A) song song với LangGraph + RAG (SV B)
-Tuần 3-4: Code UI và kết nối API (SV C)
-Tuần 5: Viết báo cáo theo phần đã phân công
-Tuần 6: Ghép nối, chuẩn hóa tài liệu, tổng duyệt Demo
-```
+Do loại bỏ hoàn toàn phần lập trình ứng dụng Web (Frontend, Full-stack Database), nhiệm vụ của nhóm sẽ tập trung 100% vào phát triển thuật toán Core Engine và viết tài liệu nghiên cứu chuyên sâu:
 
-# 5. Checklist trước khi nộp
+### 👤 Sinh viên A: Nguyễn Đình Dũng - Khảo sát và Cơ sở khoa học
+* **Nhiệm vụ nghiên cứu & thực nghiệm:** 
+    * Thu thập, làm sạch và chuẩn hóa tập dữ liệu mẫu (Dataset) song ngữ dùng làm Ground Truth để chạy thực nghiệm.
+    * Xây dựng file tri thức nền, bộ từ điển thuật ngữ chuyên ngành (Glossary) định dạng JSON/Excel để nạp vào hệ thống.
+* **Nhiệm vụ viết báo cáo:** 
+    * Viết **Tóm tắt (Abstract)**, **Chương 1** (Mở đầu, Đặt vấn đề) và **Chương 2** (Tổng quan công nghệ liên quan).
+    * Chịu trách nhiệm chính về định dạng tài liệu, chuẩn hóa công thức toán học và danh mục Tài liệu tham khảo theo chuẩn IEEE.
 
-* Nội dung báo cáo đầy đủ theo chương, không thiếu mục.
-* Tất cả hình ảnh/bảng biểu là minh chứng thật từ hệ thống.
-* Tài liệu tham khảo sử dụng một chuẩn trích dẫn thống nhất.
-* Thuật ngữ sử dụng nhất quán giữa Code, giao diện và báo cáo.
-* Đã soát lỗi chính tả, định dạng, mục lục, danh mục hình/bảng.
-* Đã tổng duyệt Demo và đối chiếu với các Test Case trong Chương 4.
+### 👤 Sinh viên B: Nguyễn Thế Giáp (Leader) - Lập trình Core AI Kernel
+* **Nhiệm vụ nghiên cứu & thực nghiệm:** 
+    * Lập trình toàn bộ thuật toán xử lý dữ liệu bằng Python trên môi trường Notebook (`services/doc_processor.py`).
+    * Thiết kế và cấu hình đồ thị trạng thái LangGraph (`agent/graph.py`), thiết lập các Node Agent và viết logic gọi hàm ngoại vi cho các Agent Tools.
+    * Hiện thực hóa luồng kết nối RAG với thư viện Vector DB (`services/vector_service.py`).
+* **Nhiệm vụ viết báo cáo:** 
+    * Viết **Chương 3 (Toàn bộ phần Phương pháp nghiên cứu):** Vẽ sơ đồ khối kiến trúc Agentic Workflow, giải thích logic toán học của cơ chế bộ nhớ ngắn hạn và thuật toán RAG tra cứu thuật ngữ.
+    * Cung cấp các đoạn mã nguồn cốt lõi và hệ thống System Prompts để đưa vào phần Phụ lục.
+
+### 👤 Sinh viên C: Phạm Minh Đức - Đánh giá số liệu & Tính toán thực nghiệm
+* **Nhiệm vụ nghiên cứu & thực nghiệm:** 
+    * Tiếp nhận file kết quả dịch đầu ra từ Sinh viên B. Sử dụng các thư viện tính toán (như `nltk`, `evaluate` hoặc `scikit-learn`) để chạy các đoạn mã đo đạc điểm số $BLEU$, chỉ số lỗi và tỷ lệ khớp từ điển $GCR$.
+    * Lập biểu đồ, bảng biểu trực quan hóa sự chênh lệch hiệu năng giữa các phương pháp.
+* **Nhiệm vụ viết báo cáo:** 
+    * Viết **Chương 4 (Thực nghiệm và Đánh giá):** Thuyết minh chi tiết thông số môi trường cài đặt, diễn giải các bảng số liệu, biểu đồ toán học.
+    * Viết phần **Phân tích mẫu sai sót (Case Study)** để chứng minh luận điểm khoa học.
+    * Viết phần **Kết luận và Hướng phát triển**.
+
+---
+
+## 4. Tiến độ phối hợp thực hiện (Workflow 6 tuần)
+
+* **Tuần 1:** Thống nhất bài toán $\rightarrow$ Sinh viên A xây dựng tập Dataset nền; Sinh viên B vẽ cấu trúc đồ thị LangGraph; Sinh viên C nghiên cứu các thư viện tính điểm $BLEU$.
+* **Tuần 2-3:** Sinh viên B tập trung code hoàn thiện Core AI Engine trên Jupyter Notebook; Sinh viên A hoàn thành Chương 1 và Chương 2 của báo cáo.
+* **Tuần 4:** Sinh viên B chạy script dịch thuật trên tập dữ liệu của Sinh viên A, xuất ra file kết quả thô. Sinh viên C lập trình script đo đạc dữ liệu và tính toán điểm số khoa học.
+* **Tuần 5:** Sinh viên C viết Chương 4; Sinh viên B viết Chương 3; Sinh viên A tổng hợp phôi, soát lỗi chính tả và quy chuẩn hóa các công thức toán học.
+* **Tuần 6:** Tổng duyệt lại toàn bộ các luận điểm khoa học trong báo cáo, chạy thử nghiệm kiểm chứng lần cuối và xuất bản file báo cáo PDF.
+
+---
+
+## 5. Checklist nghiêm ngặt trước khi nộp bài báo
+* [ ] Báo cáo không chứa bất kỳ hình ảnh nào liên quan đến giao diện nút bấm (UI/UX) hoặc các test case đăng nhập/đăng ký phần mềm.
+* [ ] Mọi biểu đồ, số liệu trong bảng ở Chương 4 phải là kết quả tính toán số học thực tế từ file đầu ra của code Kernel; tuyệt đối không tự "vẽ" số liệu.
+* [ ] Các thuật ngữ chuyên ngành (ví dụ: *Context Window, Multi-Agent, Cosine Similarity*) phải sử dụng nhất quán một cách gọi từ đầu đến cuối báo cáo.
+* [ ] Tất cả các phương trình toán học (như công thức Cosine Similarity) phải được gõ bằng định dạng LaTeX chuẩn chỉ.
+* [ ] Các tài liệu tham khảo phải được trích dẫn nguồn rõ ràng trong nội dung văn bản (ví dụ: `[1]`, `[2]`) và khớp với danh mục tài liệu ở cuối bài.
