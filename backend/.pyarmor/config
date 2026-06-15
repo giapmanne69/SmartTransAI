@@ -1,0 +1,3 @@
+[pack]
+pyi_options =  --noconfirm --add-data='E:\Project\SmartTransAI\frontend\dist;frontend/dist' --copy-metadata fastapi --copy-metadata uvicorn --copy-metadata langchain-core --copy-metadata langchain-openai --copy-metadata langgraph
+

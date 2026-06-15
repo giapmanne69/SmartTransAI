@@ -1,0 +1,34 @@
+[BUG]: [Errno 2] No such file or directory: 'main.spec'
+
+## Command Line
+D:\PYTHON INSTALLER\Scripts\pyarmor gen --pack onefile E:\Project\SmartTransAI\backend\app\main.py
+
+## Environments
+Python 3.14.2
+Pyarmor 9.2.5 (trial), 000000, non-profits
+Platform windows.x86_64
+Native windows.amd64
+Home C:\Users\DELL\.pyarmor
+
+## Traceback
+Traceback (most recent call last):
+  File "D:\PYTHON INSTALLER\Lib\site-packages\pyarmor\cli\__main__.py", line 804, in main
+    main_entry(sys.argv[1:])
+    ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\PYTHON INSTALLER\Lib\site-packages\pyarmor\cli\__main__.py", line 789, in main_entry
+    return args.func(ctx, args)
+           ~~~~~~~~~^^^^^^^^^^^
+  File "D:\PYTHON INSTALLER\Lib\site-packages\pyarmor\cli\__main__.py", line 244, in cmd_gen
+    builder.process(options, packer=packer)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PYTHON INSTALLER\Lib\site-packages\pyarmor\cli\generate.py", line 176, in process
+    auto_resources = packer.analysis()
+  File "D:\PYTHON INSTALLER\Lib\site-packages\pyarmor\cli\repack.py", line 167, in analysis
+    self.patch_specfile(specfile, hookscript, resfile)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PYTHON INSTALLER\Lib\site-packages\pyarmor\cli\repack.py", line 208, in patch_specfile
+    with open(specfile, 'r', encoding='utf-8') as f:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'main.spec'
+
+
