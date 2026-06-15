@@ -148,33 +148,84 @@ Sau khi AI Agent dịch xong, người dùng có thể truy cập **Bảng Works
 
 ## 🚀 Hướng dẫn khởi chạy dự án
 
-### Bước 1: Cấu hình biến môi trường
-Tạo file `.env` tại thư mục `/backend` (sử dụng nội dung trong `.env.example`):
+Hệ thống hỗ trợ 2 cách khởi chạy và vận hành chính tùy theo nhu cầu:
+
+---
+
+### CÁCH 1: Khởi chạy Môi trường Phát triển (Web Developer Mode)
+Dành cho lập trình viên muốn chỉnh sửa code và chạy hot-reload cho cả backend và frontend.
+
+#### Bước 1: Cấu hình biến môi trường
+Tạo file `.env` tại thư mục `/backend` (sử dụng nội dung từ mẫu dưới đây):
 ```env
 DATABASE_URL=sqlite:///./smart_trans.db
 JWT_SECRET=supersecretjwtkeychangeinproduction12345
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
 
-# OpenRouter Configuration
+# Cấu hình OpenRouter API để kết nối LLM (Gemini, GPT...)
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 OPENROUTER_MODEL=google/gemini-2.5-pro
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 ```
 
-### Bước 2: Khởi chạy Backend
-```bash
-cd backend
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
-API docs tương tác sẽ tự động được hiển thị tại: `http://127.0.0.1:8000/docs`
+#### Bước 2: Khởi chạy Backend FastAPI
+1. Mở một terminal mới, di chuyển vào thư mục backend:
+   ```bash
+   cd backend
+   ```
+2. Kích hoạt môi trường ảo (nếu có) và cài đặt thư viện:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Chạy Server FastAPI với chế độ hot-reload:
+   ```bash
+   python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+   ```
+*API docs tương tác sẽ tự động được hiển thị tại:* [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-### Bước 3: Khởi chạy Frontend
+#### Bước 3: Khởi chạy Frontend React (Vite)
+1. Mở một terminal song song khác, di chuyển vào thư mục frontend:
+   ```bash
+   cd frontend
+   ```
+2. Cài đặt các thư viện phụ thuộc:
+   ```bash
+   npm install
+   ```
+3. Chạy ứng dụng ở chế độ phát triển:
+   ```bash
+   npm run dev
+   ```
+4. Truy cập giao diện chính của hệ thống tại trình duyệt: [http://localhost:5173](http://localhost:5173)
+
+---
+
+### CÁCH 2: Đóng gói & Khởi chạy ứng dụng Desktop (Single Executable App)
+Dành cho người sử dụng cuối (End-user) hoặc khi muốn phân phối ứng dụng gọn nhẹ dưới dạng một file chạy độc lập `.exe` chạy trên Windows không cần cài đặt Node.js/Python.
+
+#### Bước 1: Chuẩn bị biến môi trường
+Đảm bảo đã tạo cấu hình file `.env` chính xác tại `/backend/.env` như ở Cách 1 (Hệ thống đóng gói sẽ tự đọc file này để làm cấu hình).
+
+#### Bước 2: Chạy kịch bản tự động đóng gói
+Tại thư mục gốc của dự án, mở terminal PowerShell và chạy lệnh:
 ```bash
-cd frontend
-npm run dev
+python build_desktop.py
 ```
-Mở trình duyệt truy cập: `http://localhost:5173` để trải nghiệm hệ thống.
+**Quy trình đóng gói tự động sẽ thực hiện:**
+1. Build React frontend tĩnh thành các file HTML/JS/CSS trong thư mục `frontend/dist`.
+2. Tải và thiết lập thư viện PyInstaller.
+3. Đóng gói mã nguồn Python Backend, các file static của Frontend, và các thư viện liên quan thành một file thực thi duy nhất.
+
+#### Bước 3: Khởi chạy ứng dụng Desktop
+1. Sau khi build hoàn thành, di chuyển tới thư mục `dist_desktop/`:
+   ```bash
+   cd dist_desktop
+   ```
+2. Chạy file thực thi: **`SmartTransAI.exe`** (hoặc double-click trực tiếp trong File Explorer).
+3. Mở trình duyệt web và truy cập: [http://localhost:8000](http://localhost:8000) để sử dụng toàn bộ ứng dụng chạy offline cục bộ.
+
+---
 
 ---
 
