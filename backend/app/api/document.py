@@ -16,10 +16,11 @@ router = APIRouter(prefix="/document", tags=["document"])
 
 from concurrent.futures import ThreadPoolExecutor
 
-def translate_single_chunk(chunk_id: int, user_id: int, db_session_factory):
+def translate_single_chunk(chunk_id: int, user_id: int, db_session_factory, mode: str = "proposed"):
     """
     Translates a single chunk using its own DB session for thread safety.
     Cooperatively checks for document status changes to support cancellation.
+    Supports 'proposed', 'baseline_a' (Gemini 1.5 Pro Zero-shot), and 'baseline_b' (GPT-4o Zero-shot).
     """
     db: Session = db_session_factory()
     try:
@@ -38,65 +39,103 @@ def translate_single_chunk(chunk_id: int, user_id: int, db_session_factory):
         db.commit()
         
         try:
-            # 1. Retrieve Glossary Terms using RAG
-            matched_terms = VectorService.retrieve_glossary_for_text(
-                db=db,
-                user_id=user_id,
-                text=chunk.original_text
-            )
-            glossary_context_str = format_glossary_for_prompt(matched_terms)
-            
-            # 2. Retrieve past corrections (Few-shot feedback loop for LLM learning)
-            past_corrections = VectorService.retrieve_past_corrections(
-                db=db,
-                user_id=user_id,
-                text=chunk.original_text
-            )
-            few_shot_lines = []
-            for pc in past_corrections:
-                few_shot_lines.append(f"- English: '{pc['original_text']}'\n  Vietnamese Human Correction: '{pc['translated_text']}'")
-            few_shot_context_str = "\n".join(few_shot_lines) if few_shot_lines else "None. Follow guidelines."
-            
-            # Double-check cancellation right before calling LLM
-            db.refresh(document)
-            if document.status != "processing":
-                chunk.status = "pending"
-                db.commit()
-                return
+            if mode in ["baseline_a", "baseline_b"]:
+                # Zero-shot baseline translation
+                from ..llm_provider import get_llm
+                from langchain_core.messages import SystemMessage, HumanMessage
+                import re
                 
-            # 3. Prepare LangGraph Input State
-            inputs = {
-                "original_text": chunk.original_text,
-                "context_window": chunk.context_window or chunk.original_text,
-                "glossary_context": glossary_context_str,
-                "few_shot_context": few_shot_context_str,
-                "translator_output": "",
-                "reviewer_output": {},
-                "review_attempts": 0,
-                "final_output": ""
-            }
-            
-            # 3. Invoke LangGraph Graph
-            result = translation_agent.invoke(inputs)
-            
-            # 4. Save result
-            chunk.translated_text = result.get("final_output", "")
-            rev_out = result.get("reviewer_output", {})
-            chunk.reviewer_feedback = rev_out.get("feedback", "")
-            chunk.status = "done"
-            db.commit()
+                model_name = "google/gemini-1.5-pro" if mode == "baseline_a" else "openai/gpt-4o-mini"
+                llm = get_llm(temperature=0.3, model_name=model_name)
+                
+                system_prompt = (
+                    "You are a professional academic translator. Translate the given English sentence into Vietnamese directly. "
+                    "Return ONLY the translated sentence, without any explanations, introductory text, or markdown code blocks."
+                )
+                user_prompt = chunk.original_text
+                
+                # Double-check cancellation right before calling LLM
+                db.refresh(document)
+                if document.status != "processing":
+                    chunk.status = "pending"
+                    db.commit()
+                    return
+                
+                response = llm.invoke([
+                    SystemMessage(content=system_prompt),
+                    HumanMessage(content=user_prompt)
+                ])
+                translated_text = response.content.strip()
+                
+                # Clean up markdown code blocks if the LLM wrapped the output in one
+                translated_text = re.sub(r"^```(?:[a-zA-Z]+)?\n", "", translated_text, flags=re.IGNORECASE)
+                translated_text = re.sub(r"\n```$", "", translated_text, flags=re.IGNORECASE)
+                translated_text = translated_text.strip()
+                
+                chunk.translated_text = translated_text
+                chunk.reviewer_feedback = f"Zero-shot baseline translation using {model_name}."
+                chunk.status = "done"
+                db.commit()
+            else:
+                # 1. Retrieve Glossary Terms using RAG
+                matched_terms = VectorService.retrieve_glossary_for_text(
+                    db=db,
+                    user_id=user_id,
+                    text=chunk.original_text
+                )
+                glossary_context_str = format_glossary_for_prompt(matched_terms)
+                
+                # 2. Retrieve past corrections (Few-shot feedback loop for LLM learning)
+                past_corrections = VectorService.retrieve_past_corrections(
+                    db=db,
+                    user_id=user_id,
+                    text=chunk.original_text
+                )
+                few_shot_lines = []
+                for pc in past_corrections:
+                    few_shot_lines.append(f"- English: '{pc['original_text']}'\n  Vietnamese Human Correction: '{pc['translated_text']}'")
+                few_shot_context_str = "\n".join(few_shot_lines) if few_shot_lines else "None. Follow guidelines."
+                
+                # Double-check cancellation right before calling LLM
+                db.refresh(document)
+                if document.status != "processing":
+                    chunk.status = "pending"
+                    db.commit()
+                    return
+                    
+                # 3. Prepare LangGraph Input State
+                inputs = {
+                    "original_text": chunk.original_text,
+                    "context_window": chunk.context_window or chunk.original_text,
+                    "glossary_context": glossary_context_str,
+                    "few_shot_context": few_shot_context_str,
+                    "translator_output": "",
+                    "reviewer_output": {},
+                    "review_attempts": 0,
+                    "final_output": ""
+                }
+                
+                # 3. Invoke LangGraph Graph
+                result = translation_agent.invoke(inputs)
+                
+                # 4. Save result
+                chunk.translated_text = result.get("final_output", "")
+                rev_out = result.get("reviewer_output", {})
+                chunk.reviewer_feedback = rev_out.get("feedback", "")
+                chunk.status = "done"
+                db.commit()
             
         except Exception as chunk_err:
             print(f"Error translating chunk {chunk_id}: {str(chunk_err)}")
             chunk.status = "failed"
-            chunk.reviewer_feedback = f"Agent translation failed: {str(chunk_err)}"
+            chunk.reviewer_feedback = f"Translation failed: {str(chunk_err)}"
             db.commit()
             
     finally:
         db.close()
 
-# Background Task to run the LangGraph Multi-Agent translation flow
-def translate_document_background(document_id: int, user_id: int, db_session_factory):
+# Background Task to run the translation flow
+def translate_document_background(document_id: int, user_id: int, db_session_factory, mode: str = "proposed"):
     db: Session = db_session_factory()
     try:
         document = db.query(Document).filter(Document.id == document_id).first()
@@ -119,7 +158,7 @@ def translate_document_background(document_id: int, user_id: int, db_session_fac
             with ThreadPoolExecutor(max_workers=4) as executor:
                 # We use list to force completion of all generator items
                 list(executor.map(
-                    lambda cid: translate_single_chunk(cid, user_id, db_session_factory),
+                    lambda cid: translate_single_chunk(cid, user_id, db_session_factory, mode),
                     chunk_ids
                 ))
         

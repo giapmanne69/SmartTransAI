@@ -1,0 +1,22 @@
+[
+  {
+    "source_term": "AI Agent",
+    "target_term": "Tác nhân AI",
+    "notes": "Hệ thống tự động"
+  },
+  {
+    "source_term": "Context Window",
+    "target_term": "Cửa sổ ngữ cảnh",
+    "notes": "Ngữ cảnh bao quanh"
+  },
+  {
+    "source_term": "Overfitting",
+    "target_term": "Quá khớp",
+    "notes": "Khớp quá mức dữ liệu huấn luyện"
+  },
+  {
+    "source_term": "machine learning",
+    "target_term": "học máy",
+    "notes": "Lĩnh vực nghiên cứu máy học"
+  }
+]

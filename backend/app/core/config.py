@@ -17,14 +17,15 @@ else:
 SETTINGS_FILE = os.path.join(base_dir, "settings.json")
 
 def get_openrouter_key_from_file() -> str:
+    key = ""
     if os.path.exists(SETTINGS_FILE):
         try:
             with open(SETTINGS_FILE, "r") as f:
                 data = json.load(f)
-                return data.get("OPENROUTER_API_KEY", "")
+                key = data.get("OPENROUTER_API_KEY", "")
         except Exception:
             pass
-    return os.getenv("OPENROUTER_API_KEY", "")
+    return key if key else os.getenv("OPENROUTER_API_KEY", "")
 
 class Settings:
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./smart_trans.db")

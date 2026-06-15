@@ -1,0 +1,4 @@
+An AI Agent performs actions based on context.
+The Context Window determines what text is visible to the model.
+Overfitting occurs when a model learns the noise in the training data.
+This machine learning algorithm achieves high accuracy on the test set.
