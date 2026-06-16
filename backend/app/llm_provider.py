@@ -38,7 +38,7 @@ def get_local_llm(temperature: float = 0.3) -> ChatOpenAI:
     
     ollama_running = False
     try:
-        url = urllib.parse.urlparse("http://localhost:11434")
+        url = urllib.parse.urlparse("http://127.0.0.1:11434")
         conn = http.client.HTTPConnection(url.hostname, url.port, timeout=1.5)
         conn.request("GET", "/")
         response = conn.getresponse()
@@ -50,7 +50,7 @@ def get_local_llm(temperature: float = 0.3) -> ChatOpenAI:
     if ollama_running:
         return ChatOpenAI(
             api_key="ollama",
-            base_url="http://localhost:11434/v1",
+            base_url="http://127.0.0.1:11434/v1",
             model="llama3",
             temperature=temperature,
             timeout=10,

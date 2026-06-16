@@ -151,4 +151,26 @@ export const settingsAPI = {
   }
 };
 
+export const parseError = (err, fallback = 'Có lỗi xảy ra. Vui lòng thử lại.') => {
+  const detail = err?.response?.data?.detail;
+  if (!detail) {
+    return err?.message || fallback;
+  }
+  if (typeof detail === 'string') {
+    return detail;
+  }
+  if (Array.isArray(detail)) {
+    return detail
+      .map((e) => {
+        const field = e.loc ? e.loc.filter((loc) => loc !== 'body' && loc !== 'query').join('.') : '';
+        return `${field ? field + ': ' : ''}${e.msg}`;
+      })
+      .join('; ');
+  }
+  if (typeof detail === 'object') {
+    return JSON.stringify(detail);
+  }
+  return String(detail);
+};
+
 export default apiClient;

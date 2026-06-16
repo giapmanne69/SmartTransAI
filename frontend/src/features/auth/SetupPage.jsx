@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { settingsAPI } from '../../services/api';
+import { settingsAPI, parseError } from '../../services/api';
 
 const SetupPage = ({ onSetupComplete }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -62,7 +62,7 @@ const SetupPage = ({ onSetupComplete }) => {
       await settingsAPI.pullModel();
       setDownloading(true);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Lỗi không thể kích hoạt tải mô hình.');
+      setError(parseError(err, 'Lỗi không thể kích hoạt tải mô hình.'));
     }
   };
 

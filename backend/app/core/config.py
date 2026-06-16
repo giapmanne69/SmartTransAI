@@ -2,19 +2,33 @@ import os
 import json
 from dotenv import load_dotenv
 
+# Tắt đa luồng của HuggingFace tokenizers và các thư viện khác để tránh lỗi spawn multiprocessing trên Windows
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["JOBLIB_MULTIPROCESSING"] = "0"
+os.environ["LOKY_MAX_CPU_COUNT"] = "1"
+
 # Load .env file
 load_dotenv()
 
 import sys
 
+
 if getattr(sys, 'frozen', False):
-    # If running in a PyInstaller bundle, use the directory where the executable is located
-    base_dir = os.path.dirname(sys.executable)
+    # For packaged desktop applications, use the user's AppData directory (Windows) or Home directory (Linux/macOS)
+    if sys.platform == "win32":
+        base_dir = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "SmartTransAI")
+    else:
+        base_dir = os.path.join(os.path.expanduser("~"), ".smarttransai")
 else:
-    # If running in development, use the backend directory
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    # Đi ngược lên 4 cấp để ra Project Root (E:\Project\SmartTransAI) tránh việc watchfiles của uvicorn reload liên tục khi ghi log/db
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+# Ensure the data directory exists
+os.makedirs(base_dir, exist_ok=True)
 
 SETTINGS_FILE = os.path.join(base_dir, "settings.json")
+LOG_FILE = os.path.join(base_dir, "smart_trans.log")
+
 
 def get_openrouter_key_from_file() -> str:
     key = ""

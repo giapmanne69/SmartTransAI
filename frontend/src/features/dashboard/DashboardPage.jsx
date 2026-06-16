@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { documentAPI } from '../../services/api';
+import { documentAPI, parseError } from '../../services/api';
 
 const DashboardPage = () => {
   const [documents, setDocuments] = useState([]);
@@ -57,7 +57,7 @@ const DashboardPage = () => {
       await fetchDocuments();
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err) {
-      setError(err.response?.data?.detail || 'Lỗi tải lên tài liệu.');
+      setError(parseError(err, 'Lỗi tải lên tài liệu.'));
     } finally {
       setUploading(false);
     }

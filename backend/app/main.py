@@ -1,10 +1,28 @@
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
 from .api import auth, glossary, document, settings as settings_api
+from .core.config import LOG_FILE
+
+# Setup central logging to file and console
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_FILE, encoding="utf-8"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger("SmartTransAI")
+
+# Redirect uvicorn logging to write to the same log file
+logging.getLogger("uvicorn").handlers = logging.getLogger().handlers
+logging.getLogger("uvicorn.access").handlers = logging.getLogger().handlers
 
 # Create database tables automatically
 Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI(
     title="Smart Trans AI API",

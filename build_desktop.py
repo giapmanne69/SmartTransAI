@@ -92,6 +92,7 @@ def main():
             f" --noconfirm"
             f" --clean"
             f" --name=SmartTransAI"
+            f" --noconsole"
             f" --copy-metadata fastapi"
             f" --copy-metadata uvicorn"
             f" --copy-metadata langchain-core"

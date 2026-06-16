@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { glossaryAPI } from '../../services/api';
+import { glossaryAPI, parseError } from '../../services/api';
 
 const GlossaryPage = () => {
   const [items, setItems] = useState([]);
@@ -47,7 +47,7 @@ const GlossaryPage = () => {
       const data = await glossaryAPI.getAll();
       setItems(data);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Lỗi tải lên tệp tin từ điển.');
+      setError(parseError(err, 'Lỗi tải lên tệp tin từ điển.'));
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -87,7 +87,7 @@ const GlossaryPage = () => {
       setTargetTerm('');
       setNotes('');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Có lỗi xảy ra khi lưu thuật ngữ.');
+      setError(parseError(err, 'Có lỗi xảy ra khi lưu thuật ngữ.'));
     }
   };
 

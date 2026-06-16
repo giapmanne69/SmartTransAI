@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authAPI } from '../../services/api';
+import { authAPI, parseError } from '../../services/api';
 
 const AuthPage = ({ onAuthSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -24,10 +24,27 @@ const AuthPage = ({ onAuthSuccess }) => {
       return;
     }
 
-    if (!isLogin && password !== confirmPassword) {
-      setError('Mật khẩu nhập lại không khớp.');
-      setLoading(false);
-      return;
+    if (!isLogin) {
+      if (username.length < 3) {
+        setError('Tên đăng nhập phải có ít nhất 3 ký tự.');
+        setLoading(false);
+        return;
+      }
+      if (username.length > 50) {
+        setError('Tên đăng nhập không được vượt quá 50 ký tự.');
+        setLoading(false);
+        return;
+      }
+      if (password.length < 6) {
+        setError('Mật khẩu phải có ít nhất 6 ký tự.');
+        setLoading(false);
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError('Mật khẩu nhập lại không khớp.');
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -49,7 +66,7 @@ const AuthPage = ({ onAuthSuccess }) => {
         setConfirmPassword('');
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Có lỗi xảy ra. Vui lòng thử lại.');
+      setError(parseError(err, 'Có lỗi xảy ra. Vui lòng thử lại.'));
     } finally {
       setLoading(false);
     }

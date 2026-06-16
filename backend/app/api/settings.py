@@ -7,10 +7,7 @@ import threading
 
 router = APIRouter(prefix="/settings", tags=["settings"])
 
-SETTINGS_FILE = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    "settings.json"
-)
+from ..core.config import SETTINGS_FILE
 
 # Global dictionary to keep track of model pulling progress
 pull_status = {
@@ -24,14 +21,14 @@ class SaveSettingsRequest(BaseModel):
 
 def check_ollama_running() -> bool:
     try:
-        with urllib.request.urlopen("http://localhost:11434/", timeout=2) as response:
+        with urllib.request.urlopen("http://127.0.0.1:11434/", timeout=2) as response:
             return response.status == 200
     except Exception:
         return False
 
 def check_model_downloaded() -> bool:
     try:
-        with urllib.request.urlopen("http://localhost:11434/api/tags", timeout=2) as response:
+        with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=2) as response:
             if response.status == 200:
                 data = json.loads(response.read().decode())
                 models = data.get("models", [])
@@ -49,7 +46,7 @@ def pull_model_task():
     pull_status["progress"] = 0
     pull_status["message"] = "Bắt đầu tải mô hình..."
     
-    url = "http://localhost:11434/api/pull"
+    url = "http://127.0.0.1:11434/api/pull"
     payload = json.dumps({"name": "llama3"}).encode('utf-8')
     req = urllib.request.Request(
         url,
