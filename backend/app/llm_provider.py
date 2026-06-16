@@ -20,6 +20,8 @@ def get_llm(temperature: float = 0.3, model_name: Optional[str] = None) -> ChatO
         base_url=settings.OPENROUTER_BASE_URL,
         model=target_model,
         temperature=temperature,
+        timeout=10,
+        max_retries=0,
         default_headers={
             "HTTP-Referer": "https://github.com/giapmanne69/SmartTransAI",
             "X-Title": "Smart Trans AI Agentic CAT Tool",
@@ -51,7 +53,8 @@ def get_local_llm(temperature: float = 0.3) -> ChatOpenAI:
             base_url="http://localhost:11434/v1",
             model="llama3",
             temperature=temperature,
-            timeout=10
+            timeout=10,
+            max_retries=0
         )
     else:
         # Fallback to OpenRouter using Llama-3 model to simulate local Llama-3 model behavior
@@ -67,6 +70,7 @@ def get_local_llm(temperature: float = 0.3) -> ChatOpenAI:
             base_url=settings.OPENROUTER_BASE_URL,
             model=fallback_model,
             temperature=temperature,
+            max_retries=0,
             default_headers={
                 "HTTP-Referer": "https://github.com/giapmanne69/SmartTransAI",
                 "X-Title": "Smart Trans AI (Ollama Fallback)",

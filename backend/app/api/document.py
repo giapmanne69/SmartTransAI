@@ -116,12 +116,18 @@ def translate_single_chunk(chunk_id: int, user_id: int, db_session_factory, mode
                 }
                 
                 # 3. Invoke LangGraph Graph
-                result = translation_agent.invoke(inputs)
+                try:
+                    result = translation_agent.invoke(inputs)
+                    chunk.translated_text = result.get("final_output", "")
+                    rev_out = result.get("reviewer_output", {})
+                    chunk.reviewer_feedback = rev_out.get("feedback", "")
+                except Exception as graph_err:
+                    print(f"Agentic graph failed for chunk {chunk_id}, falling back to offline NMT: {str(graph_err)}")
+                    from ..services.nmt_service import NMTService
+                    fallback_text = NMTService.translate(chunk.original_text)
+                    chunk.translated_text = fallback_text
+                    chunk.reviewer_feedback = f"Offline NMT Fallback (Agentic run failed: {str(graph_err)})"
                 
-                # 4. Save result
-                chunk.translated_text = result.get("final_output", "")
-                rev_out = result.get("reviewer_output", {})
-                chunk.reviewer_feedback = rev_out.get("feedback", "")
                 chunk.status = "done"
                 db.commit()
             
@@ -333,6 +339,76 @@ def stop_document_translation(
     db.refresh(document)
     return document
 
+def check_and_update_glossary_from_feedback(db: Session, user_id: int, original_text: str, old_translation: str, new_translation: str):
+    """
+    Compares original text and translations to identify if the user changed a glossary term's translation.
+    If so, updates the glossary database table automatically.
+    """
+    try:
+        from ..models import Glossary
+        from ..llm_provider import get_local_llm
+        from langchain_core.messages import SystemMessage, HumanMessage
+        import json
+        import re
+        
+        # 1. Fetch user glossaries
+        glossaries = db.query(Glossary).filter(Glossary.user_id == user_id).all()
+        if not glossaries:
+            return
+            
+        # Filter glossaries that actually appear in the original text
+        applicable_glossaries = []
+        for g in glossaries:
+            if g.source_term.lower() in original_text.lower():
+                applicable_glossaries.append({
+                    "source_term": g.source_term,
+                    "target_term": g.target_term
+                })
+                
+        if not applicable_glossaries:
+            return
+            
+        # 2. Call LLM to detect if any term was updated in the new translation
+        llm = get_local_llm(temperature=0.1)
+        system_prompt = (
+            "You are a glossary manager. Analyze the original English sentence, the old translation, and the new human-corrected translation. "
+            "Detect if the human changed the translation for any of these glossary terms: {glossary_list}.\n"
+            "Return ONLY a JSON list of updated terms, for example: [{\"source_term\": \"AI Agent\", \"target_term\": \"Tác nhân AI mới\"}]. "
+            "If no glossary term translation was changed, return an empty list: []."
+        ).format(glossary_list=json.dumps(applicable_glossaries, ensure_ascii=False))
+        
+        user_prompt = (
+            f"Original: {original_text}\n"
+            f"Old Translation: {old_translation}\n"
+            f"New Translation: {new_translation}"
+        )
+        
+        response = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)])
+        content = response.content.strip()
+        
+        # Clean JSON blocks
+        cleaned = re.sub(r"^```(?:json)?", "", content, flags=re.IGNORECASE)
+        cleaned = re.sub(r"```$", "", cleaned, flags=re.IGNORECASE)
+        cleaned = cleaned.strip()
+        
+        updates = json.loads(cleaned)
+        if updates and isinstance(updates, list):
+            for update in updates:
+                src = update.get("source_term")
+                tgt = update.get("target_term")
+                if src and tgt:
+                    # Find and update in database
+                    g_item = db.query(Glossary).filter(
+                        Glossary.user_id == user_id,
+                        Glossary.source_term == src
+                    ).first()
+                    if g_item and g_item.target_term != tgt:
+                        print(f"Auto-updating glossary from feedback: '{src}' -> '{g_item.target_term}' updated to '{tgt}'")
+                        g_item.target_term = tgt
+                        db.commit()
+    except Exception as e:
+        print(f"Failed to auto-update glossary from feedback: {str(e)}")
+
 @router.put("/chunk/{chunk_id}", response_model=DocumentChunkOut)
 def update_chunk(
     chunk_id: int,
@@ -351,8 +427,21 @@ def update_chunk(
             detail="Document chunk not found"
         )
         
-    chunk.translated_text = chunk_data.translated_text
-    chunk.corrected_by_user = chunk_data.corrected_by_user
+    old_translation = chunk.translated_text or ""
+    new_translation = chunk_data.translated_text
+    
+    # Trigger glossary update from feedback in background/inline
+    if old_translation != new_translation:
+        check_and_update_glossary_from_feedback(
+            db=db,
+            user_id=current_user.id,
+            original_text=chunk.original_text,
+            old_translation=old_translation,
+            new_translation=new_translation
+        )
+        
+    chunk.translated_text = new_translation
+    chunk.corrected_by_user = True  # Force true when edited by human for Translation Memory
     chunk.status = "done"
     db.commit()
     db.refresh(chunk)
@@ -552,12 +641,18 @@ def retranslate_chunk(
         }
         
         # 4. Invoke LangGraph Graph
-        result = translation_agent.invoke(inputs)
-        
-        # 5. Save result
-        chunk.translated_text = result.get("final_output", "")
-        rev_out = result.get("reviewer_output", {})
-        chunk.reviewer_feedback = rev_out.get("feedback", "")
+        try:
+            result = translation_agent.invoke(inputs)
+            chunk.translated_text = result.get("final_output", "")
+            rev_out = result.get("reviewer_output", {})
+            chunk.reviewer_feedback = rev_out.get("feedback", "")
+        except Exception as graph_err:
+            print(f"Agentic graph failed for retranslation of chunk {chunk_id}, falling back to offline NMT: {str(graph_err)}")
+            from ..services.nmt_service import NMTService
+            fallback_text = NMTService.translate(chunk.original_text)
+            chunk.translated_text = fallback_text
+            chunk.reviewer_feedback = f"Offline NMT Fallback (Agentic run failed: {str(graph_err)})"
+            
         chunk.status = "done"
         db.commit()
         db.refresh(chunk)

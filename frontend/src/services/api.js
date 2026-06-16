@@ -1,17 +1,30 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.__BACKEND_PORT__) {
+    return `http://localhost:${window.__BACKEND_PORT__}/api`;
+  }
+  return 'http://localhost:8000/api';
+};
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Interceptor to attach the token automatically
+// Interceptor to attach token and handle dynamic Tauri port
 apiClient.interceptors.request.use(
   (config) => {
+    if (typeof window !== 'undefined') {
+      if (window.__BACKEND_PORT__) {
+        config.baseURL = `http://localhost:${window.__BACKEND_PORT__}/api`;
+      } else if (window.location && window.location.hostname && window.location.port !== '5173') {
+        const portPart = window.location.port ? `:${window.location.port}` : '';
+        config.baseURL = `${window.location.protocol}//${window.location.hostname}${portPart}/api`;
+      }
+    }
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -110,7 +123,16 @@ export const documentAPI = {
   },
   exportUrl: (id) => {
     const token = localStorage.getItem('token');
-    return `${API_BASE_URL}/document/${id}/export?token=${token}`;
+    let baseUrl = 'http://localhost:8000/api';
+    if (typeof window !== 'undefined') {
+      if (window.__BACKEND_PORT__) {
+        baseUrl = `http://localhost:${window.__BACKEND_PORT__}/api`;
+      } else if (window.location && window.location.hostname && window.location.port !== '5173') {
+        const portPart = window.location.port ? `:${window.location.port}` : '';
+        baseUrl = `${window.location.protocol}//${window.location.hostname}${portPart}/api`;
+      }
+    }
+    return `${baseUrl}/document/${id}/export?token=${token}`;
   }
 };
 

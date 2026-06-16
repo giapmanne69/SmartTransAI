@@ -39,3 +39,16 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Desktop / Mobile App (Tauri & Packaging tools)
+/build_desktop.py
+/frontend/src-tauri/
+/build_temp/
+/backend/dist/
+/backend/build/
+/backend/SmartTransAI.spec
+/backend/run_desktop.py
+/backend/pyarmor.bug.log
+/backend/.pyarmor/
+/test_key.py
+/backend/uploads/

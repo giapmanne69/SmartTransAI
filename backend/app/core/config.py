@@ -28,7 +28,15 @@ def get_openrouter_key_from_file() -> str:
     return key if key else os.getenv("OPENROUTER_API_KEY", "")
 
 class Settings:
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./smart_trans.db")
+    @property
+    def DATABASE_URL(self) -> str:
+        env_url = os.getenv("DATABASE_URL")
+        if env_url:
+            return env_url
+        db_path = os.path.join(base_dir, "smart_trans.db")
+        db_path_abs = os.path.abspath(db_path).replace("\\", "/")
+        return f"sqlite:///{db_path_abs}"
+
     JWT_SECRET: str = os.getenv("JWT_SECRET", "supersecretjwtkeychangeinproduction12345")
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))

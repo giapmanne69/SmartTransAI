@@ -130,7 +130,11 @@ OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 ### CÁCH 2: Khởi chạy môi trường phát triển Desktop (Tauri Developer Mode)
 Dành cho lập trình viên muốn chạy thử nghiệm trực tiếp cửa sổ ứng dụng Desktop cục bộ và kiểm tra tính tương thích của Webview với OS.
 
-1.  Đảm bảo đã chạy và bật Backend FastAPI ở cổng `8000` (như ở Cách 1).
+1.  Đảm bảo file chạy backend sidecar đã được tạo tại `frontend/src-tauri/src/bin/SmartTransAI-x86_64-pc-windows-msvc.exe`. Cách đơn giản nhất để tạo nó là chạy lệnh đóng gói dưới đây một lần:
+    ```bash
+    python build_desktop.py
+    ```
+    *(Sau khi file sidecar đã được tạo, các lần chạy thử nghiệm sau sẽ tự động bỏ qua đóng gói backend và khởi chạy rất nhanh).*
 2.  Di chuyển vào thư mục frontend:
     ```bash
     cd frontend
@@ -152,9 +156,13 @@ Dành cho việc đóng gói bản phân phối release độc lập dạng file
     ```
 2.  **Quy trình đóng gói tự động:**
     *   Build React frontend thành file tĩnh trong thư mục `frontend/dist`.
-    *   Build backend Python thành file thực thi sidecar bằng PyInstaller và tự động copy vào thư mục `frontend/src-tauri/src/bin`.
+    *   **Tối ưu hóa bỏ qua đóng gói (Skip-rebuild):** Để tiết kiệm thời gian (tránh biên dịch lại PyInstaller mất 10 phút), script sẽ tự động kiểm tra và sử dụng lại file sidecar có sẵn nếu nó đã tồn tại trong `frontend/src-tauri/src/bin/`.
+    *   **Bắt buộc đóng gói lại backend (Force-rebuild):** Nếu bạn sửa đổi code của FastAPI Backend và muốn bắt buộc đóng gói lại backend, hãy thêm tham số `--force-backend`:
+        ```bash
+        python build_desktop.py --force-backend
+        ```
     *   Gọi Rust Compiler biên dịch mã nguồn Tauri thành file chạy desktop cài đặt hoàn chỉnh.
-3.  **Kết quả đầu ra:** Gói cài đặt `.msi` hoặc `.exe` sẽ được tạo ra tại thư mục `frontend/src-tauri/target/release/bundle/`. 
+3.  **Kết quả đầu ra:** Gói cài đặt `.msi` và `.exe` sẽ được tạo ra tại thư mục `frontend/src-tauri/target/release/bundle/`. 
 4.  Tải và cài đặt file này trên Windows, ứng dụng sẽ chạy offline hoàn toàn độc lập, tự động bật/tắt FastAPI backend ngầm mỗi khi bạn mở/đóng app.
 
 ---
@@ -168,4 +176,8 @@ Dành cho việc đóng gói bản phân phối release độc lập dạng file
     ```bash
     python run_evaluation.py
     ```
-3.  Script sẽ tự động kiểm tra, cài đặt các thư viện còn thiếu và tiến hành dịch thuật 3 phương pháp song song. Kết quả bảng số liệu thực nghiệm đối sánh chi tiết sẽ được hiển thị trực tiếp và lưu tại file `data/evaluation_results.md`.
+3.  **Cơ chế Fast Offline Fallback:**
+    *   Script sẽ tự động kiểm tra nhanh kết nối và quota của OpenRouter API key.
+    *   Nếu phát hiện mất kết nối hoặc API key hết credits (lỗi 402), hệ thống tự động kích hoạt **Fast Offline Fallback Mode**, lập tức giả lập lỗi LLM để chuyển hướng Proposed Model sang dịch offline bằng mô hình NMT chuyên dụng cục bộ.
+    *   Điều này giúp script chạy cực kỳ nhanh (mất 5 giây thay vì 10 phút chờ timeout DNS trên Windows) và bảo đảm việc thử nghiệm luôn hoạt động ổn định.
+4.  Kết quả bảng số liệu thực nghiệm đối sánh chi tiết sẽ được hiển thị trực tiếp và lưu tại file `data/evaluation_results.md`.

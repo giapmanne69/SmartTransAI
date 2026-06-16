@@ -65,16 +65,37 @@ In-Context Learning cho phép mô hình ngôn ngữ hoặc dịch thuật điề
 ### 3.1. Kiến trúc luồng xử lý AI Edge-Hybrid (Edge-Hybrid Agentic Architecture)
 Hệ thống được thiết kế theo kiến trúc lai, vừa hỗ trợ chạy offline hoàn toàn dưới dạng Desktop App, vừa hỗ trợ kết nối API trực tuyến khi triển khai trên Web.
 
-```text
-[HÌNH VẼ 3.1: Sơ đồ kiến trúc tổng thể Tauri Sidecar và luồng xử lý Agentic Offline]
-(Mô tả hình vẽ: Sơ đồ biểu diễn sự phối hợp giữa các thành phần:
- 1. Tauri App (Rust wrapper) khởi chạy, gọi Sidecar chạy ngầm Python Backend (FastAPI).
- 2. Webview hiển thị React Frontend kết nối API tới Sidecar qua localhost.
- 3. Khi dịch tài liệu: Văn bản được xử lý thành các Chunk kèm Context Window.
- 4. Glossary RAG truy xuất SQLite cục bộ để lấy thuật ngữ và lấy các ví dụ Human Feedback trong quá khứ làm Few-shot context.
- 5. Đưa dữ liệu qua Local NMT Engine (chạy hoàn toàn offline trên CPU) hoặc Agentic LangGraph để sinh bản dịch.
- 6. Người dùng hiệu chỉnh bản dịch trên Workspace -> Lưu lại SQLite DB -> Kích hoạt cơ chế tự học và tự động cập nhật Glossary).
+```mermaid
+graph TD
+    subgraph Tauri Desktop Wrapper (Rust)
+        TApp[Tauri App Main Process] -->|1. Spawn & Lifecycle Control| Sidecar[FastAPI Python Sidecar Process]
+        TApp -->|2. Webview Root| Webview[Webview UI Window]
+    end
+
+    subgraph React Frontend (Vite)
+        Webview -->|3. Localhost API Requests| API[api.js Client]
+    end
+
+    subgraph FastAPI Backend & AI Engine
+        Sidecar -->|API Endpoints| API
+        Sidecar --> DB[(SQLite Database)]
+        
+        subgraph Agentic Offline Loop
+            DocProc[Document Processor] -->|Context-aware Chunking| Chunks[Document Chunks]
+            Chunks --> RAG[Glossary RAG & Translation Memory]
+            RAG -->|Cosine Similarity| DB
+            RAG -->|Few-shot Context| NMT[Local NMT Engine Helsinki-NLP]
+            NMT -->|Draft Translation| Reviewer[Agentic Reviewer / Fallback]
+            Reviewer -->|Final Translation| DB
+        end
+    end
+
+    subgraph Human Feedback (Workspace)
+        Webview -->|4. User Edits Chunk| DB
+        DB -->|5. Auto-Glossary Update / TM| RAG
+    end
 ```
+*HÌNH VẼ 3.1: Sơ đồ kiến trúc tổng thể Tauri Sidecar và luồng xử lý Agentic Offline*
 
 ### 3.2. Thuật toán Học từ Feedback và Cập nhật Glossary tự động
 Khi biên dịch viên chỉnh sửa bản dịch thô và bấm nút Lưu, hệ thống thực hiện hai luồng xử lý tự động:

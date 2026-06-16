@@ -5,6 +5,7 @@ from langgraph.graph import StateGraph, END
 from langchain_core.messages import SystemMessage, HumanMessage
 from ..llm_provider import get_llm, get_local_llm
 from .prompts import TRANSLATOR_PROMPT, REVIEWER_PROMPT, STYLE_ALIGN_PROMPT
+from ..services.nmt_service import NMTService
 
 class AgentState(TypedDict):
     original_text: str
@@ -84,6 +85,14 @@ def translator_node(state: AgentState) -> Dict[str, Any]:
     few_shot = state.get("few_shot_context", "")
     attempts = state.get("review_attempts", 0)
     
+    # Check if this is the first attempt (Round 0)
+    # Use offline NMT Service for fast and lightweight draft translation
+    if attempts == 0:
+        draft_translation = NMTService.translate(original)
+        return {"translator_output": draft_translation}
+        
+    # If this is a re-translation after review feedback (attempts > 0)
+    # We need reasoning capability to fix errors based on feedback, so we call local LLM (or fallback)
     llm = get_local_llm(temperature=0.3)
     
     # If this is a re-translation after review feedback

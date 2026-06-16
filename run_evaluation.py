@@ -67,6 +67,44 @@ if os.path.exists(dotenv_path):
 else:
     print(f"Warning: .env file not found at {dotenv_path}")
 
+# Check OpenRouter API key quota connectivity before running to avoid DNS hangs and 402 timeouts
+print("Checking OpenRouter API connectivity and quota...")
+api_working = False
+api_key = os.environ.get("OPENROUTER_API_KEY")
+if api_key:
+    import urllib.request
+    import json
+    try:
+        req = urllib.request.Request(
+            "https://openrouter.ai/api/v1/auth/key",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+        )
+        # 3 second timeout for quick check
+        with urllib.request.urlopen(req, timeout=3.0) as response:
+            res_data = json.loads(response.read().decode('utf-8'))
+            limit = res_data.get("data", {}).get("limit", 0)
+            usage = res_data.get("data", {}).get("usage", 0)
+            if limit > usage or (limit == 0 and res_data.get("data", {}).get("is_free", False)) or res_data.get("data", {}).get("total_credits", 0) > 0:
+                api_working = True
+                print("-> OpenRouter API key is valid and has remaining quota.")
+            else:
+                print("-> OpenRouter API key has insufficient credits/quota.")
+    except Exception as e:
+        print(f"-> OpenRouter API connectivity/auth check failed: {str(e)}")
+else:
+    print("-> No OpenRouter API key configured.")
+
+if not api_working:
+    print("-> Activating Fast Offline Fallback Mode: OpenRouter LLM calls will fail fast without network delays.")
+    import app.llm_provider
+    def patched_get_llm(*args, **kwargs):
+        raise ValueError("OpenRouter offline fallback mode active (insufficient credits or no connection).")
+    app.llm_provider.get_llm = patched_get_llm
+    app.llm_provider.get_local_llm = patched_get_llm
+
 from app.database import SessionLocal, engine, Base
 from app.models import User, Document, DocumentChunk, Glossary
 from app.api.document import translate_single_chunk
